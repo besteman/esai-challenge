@@ -8,7 +8,7 @@ interface ProductCardsProps {
   href: string;
 }
 
-export const ProductCards = ({
+export const ProductCard = ({
   title,
   description,
   href,
