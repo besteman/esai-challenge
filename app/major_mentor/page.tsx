@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 
 import { ProductWelcome } from "@/components/productWelcome";
 import { PromptReq } from "@/components/stream/promptReq";
 import { TextInput } from "@/components/question/textInput";
 import { FactorSelector } from "@/components/question/factorSelector";
+import { EditableCard } from "@/components/summary/editableCard";
+import { FactorsCard } from "@/components/summary/factorsCard";
 
 interface MajorOption {
   majorTitle: string;
@@ -71,72 +72,25 @@ export default function MajorMentorPage() {
   const renderPreviousInputs = () => {
     return (
       <div className="w-full max-w-2xl space-y-4 mb-6">
-        {currentStage > 1 && (
-          <Card className="cursor-pointer hover:shadow-md transition-shadow">
-            <CardBody className="p-4" onClick={() => handleEditStage(1)}>
-              <div className="flex justify-between items-start">
-                <div>
-                  <p className="font-semibold text-sm text-muted-foreground">
-                    Favorite Subject:
-                  </p>
-                  <p className="text-lg">{userInputs.favoriteSubject}</p>
-                </div>
-                <Button color="primary" size="sm" variant="light">
-                  Edit
-                </Button>
-              </div>
-            </CardBody>
-          </Card>
-        )}
+        <EditableCard
+          show={currentStage > 1}
+          title="Favorite Subject:"
+          value={userInputs.favoriteSubject}
+          onEdit={() => handleEditStage(1)}
+        />
 
-        {currentStage > 2 && (
-          <Card className="cursor-pointer hover:shadow-md transition-shadow">
-            <CardBody className="p-4" onClick={() => handleEditStage(2)}>
-              <div className="flex justify-between items-start">
-                <div className="space-y-2">
-                  <p className="font-semibold text-sm text-muted-foreground">
-                    Selections & Importance:
-                  </p>
-                  <div className="space-y-1">
-                    <p className="text-sm">
-                      Factor 1: {userInputs.factors.factor1.value} (Importance:{" "}
-                      {userInputs.factors.factor1.importance}/5)
-                    </p>
-                    <p className="text-sm">
-                      Factor 2: {userInputs.factors.factor2.value} (Importance:{" "}
-                      {userInputs.factors.factor2.importance}/5)
-                    </p>
-                    <p className="text-sm">
-                      Factor 3: {userInputs.factors.factor3.value} (Importance:{" "}
-                      {userInputs.factors.factor3.importance}/5)
-                    </p>
-                  </div>
-                </div>
-                <Button color="primary" size="sm" variant="light">
-                  Edit
-                </Button>
-              </div>
-            </CardBody>
-          </Card>
-        )}
+        <FactorsCard
+          factors={userInputs.factors}
+          show={currentStage > 2}
+          onEdit={() => handleEditStage(2)}
+        />
 
-        {currentStage > 3 && (
-          <Card className="cursor-pointer hover:shadow-md transition-shadow">
-            <CardBody className="p-4" onClick={() => handleEditStage(3)}>
-              <div className="flex justify-between items-start">
-                <div>
-                  <p className="font-semibold text-sm text-muted-foreground">
-                    Post-College Plans:
-                  </p>
-                  <p className="text-lg">{userInputs.postCollegePlans}</p>
-                </div>
-                <Button color="primary" size="sm" variant="light">
-                  Edit
-                </Button>
-              </div>
-            </CardBody>
-          </Card>
-        )}
+        <EditableCard
+          show={currentStage > 3}
+          title="Post-College Plans:"
+          value={userInputs.postCollegePlans}
+          onEdit={() => handleEditStage(3)}
+        />
       </div>
     );
   };
