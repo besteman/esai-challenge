@@ -1,14 +1,280 @@
-import { ProductWelcome } from "@/components/productWelcome";
+"use client";
 
-export default function SchoolMatchPage() {
+import { useState } from "react";
+import { Card, CardBody, CardHeader } from "@heroui/card";
+
+import { ProductWelcome } from "@/components/productWelcome";
+import { PromptReq } from "@/components/stream/promptReq";
+import { TextInput } from "@/components/question/textInput";
+import { EditableCard } from "@/components/summary/editableCard";
+
+interface CollegeOption {
+  collegeName: string;
+  descriptionOfCollege: string;
+  whyThisCollege: string;
+}
+
+interface UserInputs {
+  location: string;
+  locationRequirements: string;
+  futurePlans: string;
+  idealCampusExperience: string;
+  unweightedGPA: string;
+}
+
+export default function ScholMatchPage() {
+  const [currentStage, setCurrentStage] = useState(1);
+  const [userInputs, setUserInputs] = useState<UserInputs>({
+    location: "",
+    locationRequirements: "",
+    futurePlans: "",
+    idealCampusExperience: "",
+    unweightedGPA: "",
+  });
+  const [generation, setGeneration] = useState("");
+
+  const handleEditStage = (stage: number) => {
+    setCurrentStage(stage);
+  };
+
+  const renderPreviousInputs = () => {
+    return (
+      <div className="w-full max-w-2xl space-y-4 mb-6">
+        <EditableCard
+          show={currentStage > 1}
+          title="Location"
+          value={userInputs.location}
+          onEdit={() => handleEditStage(1)}
+        />
+
+        <EditableCard
+          show={currentStage > 2}
+          title="Location Requirements:"
+          value={userInputs.locationRequirements}
+          onEdit={() => handleEditStage(1)}
+        />
+
+        <EditableCard
+          show={currentStage > 3}
+          title="Future Plans:"
+          value={userInputs.futurePlans}
+          onEdit={() => handleEditStage(3)}
+        />
+
+        <EditableCard
+          show={currentStage > 4}
+          title="Ideal Campus Experience:"
+          value={userInputs.idealCampusExperience}
+          onEdit={() => handleEditStage(4)}
+        />
+
+        <EditableCard
+          show={currentStage > 5}
+          title="Unweighted GPA:"
+          value={userInputs.unweightedGPA}
+          onEdit={() => handleEditStage(5)}
+        />
+      </div>
+    );
+  };
+
   return (
     <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
       <ProductWelcome
         description="Find the best schools and programs for you based on your strengths, goals, and budget."
-        heading="Let's find your perfect school match."
-        subtitle="Discover schools that align with your aspirations and values!"
+        heading="Let’s make you a match!"
+        subtitle="Congrats on beginning the process of finding your dream school."
         title="School Match Maker"
       />
+
+      {renderPreviousInputs()}
+
+      <div className="w-full max-w-2xl">
+        {currentStage === 1 && (
+          <TextInput
+            buttonText="Next"
+            initialValue={userInputs.location}
+            label="Location"
+            placeholder="example: Florida"
+            question="If you live in the United States, what state do you live in?"
+            onSubmit={(value) => {
+              setUserInputs({ ...userInputs, location: value });
+              setCurrentStage(2);
+            }}
+          />
+        )}
+
+        {currentStage === 2 && (
+          <TextInput
+            buttonText="Next"
+            initialValue={userInputs.locationRequirements}
+            label="Location Requirements"
+            placeholder="example: I want to have the access to best ramen"
+            question="Do you have any other location requirements?"
+            onSubmit={(value) => {
+              setUserInputs({ ...userInputs, locationRequirements: value });
+              setCurrentStage(3);
+            }}
+          />
+        )}
+
+        {currentStage === 3 && (
+          <TextInput
+            buttonText="Complete"
+            initialValue={userInputs.futurePlans}
+            label="Future Plans"
+            placeholder="Tell us about your future major or career goals"
+            question="What are your plans after college?"
+            onSubmit={(value) => {
+              setUserInputs({ ...userInputs, futurePlans: value });
+              setCurrentStage(4);
+            }}
+          />
+        )}
+
+        {currentStage === 4 && (
+          <TextInput
+            buttonText="Complete"
+            initialValue={userInputs.idealCampusExperience}
+            label="Ideal Campus Experience"
+            placeholder="Smaller campus, more community, etc."
+            question="Describe your ideal campus experience."
+            onSubmit={(value) => {
+              setUserInputs({ ...userInputs, idealCampusExperience: value });
+              setCurrentStage(5);
+            }}
+          />
+        )}
+
+        {currentStage === 5 && (
+          <TextInput
+            buttonText="Complete"
+            initialValue={userInputs.unweightedGPA}
+            label="Unweighted GPA"
+            placeholder="example: 3.5"
+            question="What is your unweighted GPA?"
+            onSubmit={(value) => {
+              setUserInputs({ ...userInputs, unweightedGPA: value });
+              setCurrentStage(6);
+            }}
+          />
+        )}
+
+        {currentStage === 6 && (
+          <div className="text-center space-y-4">
+            <h3 className="text-xl font-semibold">
+              Ready to find your perfect College?
+            </h3>
+            {!generation && (
+              <PromptReq
+                buttonColor="success"
+                buttonSize="lg"
+                buttonText="Find Me A College!"
+                loadingSubtext="Finding your perfect college match..."
+                loadingText="Loading..."
+                systemPrompt={
+                  "You are a college admission advisor who is helping a student chosing their college" +
+                  "You will receive the student's inputs in JSON of their current location, location requirements, post-college plans, Ideal Campus Experience, and unweighted GPA." +
+                  "You will give 3 colleges that fit the student's inputs, and a brief summary of college and why it is a good fit." +
+                  "You will return the response in a JSON format of the following structure: " +
+                  JSON.stringify([
+                    {
+                      option1: {
+                        collegeName: "UCF",
+                        descriptionOfCollege:
+                          "UCF is a large public university in Orlando, Florida.",
+                        whyThisCollege:
+                          "UCF is a great fit for you because it offers a wide range of majors and has a vibrant campus life, which aligns with your interest in a larger community and your future plans in business.",
+                      },
+                    },
+                    {
+                      option2: {
+                        collegeName: "USF",
+                        descriptionOfCollege:
+                          "USF is a public research university in Tampa, Florida.",
+                        whyThisCollege:
+                          "USF is a great fit for you because it has a strong business program and is located in a city with a growing job market, which aligns with your future plans.",
+                      },
+                    },
+                  ])
+                }
+                userPrompt={`Given the following user inputs: ${JSON.stringify(userInputs)}`}
+                onResponse={(response) => setGeneration(response)}
+              />
+            )}
+            {generation && (
+              <div className="space-y-4">
+                <h4 className="text-lg font-semibold text-center mb-4">
+                  Your Recommended College Recommendations:
+                </h4>
+                <div className="space-y-4">
+                  {(() => {
+                    try {
+                      const parsedGeneration = JSON.parse(generation);
+
+                      return parsedGeneration.map(
+                        (item: any, index: number) => {
+                          const optionKey = Object.keys(item)[0];
+                          const option: CollegeOption = item[optionKey];
+
+                          return (
+                            <Card key={index} className="w-full">
+                              <CardHeader className="pb-0 pt-4 px-4 flex-col items-start">
+                                <h4 className="font-bold text-large text-primary">
+                                  {option.collegeName}
+                                </h4>
+                              </CardHeader>
+                              <CardBody className="overflow-visible py-2 px-4">
+                                <div className="space-y-3">
+                                  <div>
+                                    <h5 className="font-semibold text-sm text-muted-foreground mb-1">
+                                      Description of College
+                                    </h5>
+                                    <p className="text-sm">
+                                      {option.descriptionOfCollege}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <h5 className="font-semibold text-sm text-muted-foreground mb-1">
+                                      Why This College:
+                                    </h5>
+                                    <p className="text-sm">
+                                      {option.whyThisCollege}
+                                    </p>
+                                  </div>
+                                </div>
+                              </CardBody>
+                            </Card>
+                          );
+                        },
+                      );
+                    } catch {
+                      return (
+                        <div className="space-y-4">
+                          <div className="text-center">
+                            <h4 className="text-lg font-semibold text-red-600 mb-2">
+                              Error parsing response
+                            </h4>
+                            <p className="text-sm text-muted-foreground mb-4">
+                              The response couldn&apos;t be parsed as expected.
+                              Here&apos;s the raw response:
+                            </p>
+                          </div>
+                          <div className="text-left bg-black text-white p-6 rounded-lg">
+                            <div className="whitespace-pre-wrap">
+                              {generation}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }
+                  })()}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </section>
   );
 }
