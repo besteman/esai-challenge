@@ -1,16 +1,13 @@
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
 "use client";
 
 import { useState } from "react";
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader } from "@heroui/card";
-import { Textarea } from "@heroui/input";
-import { Slider } from "@heroui/slider";
-import { generateText } from "ai";
-import { openai } from "@ai-sdk/openai";
 
 import { ProductWelcome } from "@/components/productWelcome";
+import { PromptReq } from "@/components/stream/promptReq";
+import { TextInput } from "@/components/question/textInput";
+import { FactorSelector } from "@/components/question/factorSelector";
 
 interface MajorOption {
   majorTitle: string;
@@ -20,15 +17,19 @@ interface MajorOption {
 
 interface UserInputs {
   favoriteSubject: string;
-  dropdownSelections: {
-    dropdown1: string;
-    dropdown2: string;
-    dropdown3: string;
-  };
-  importanceRatings: {
-    dropdown1: number;
-    dropdown2: number;
-    dropdown3: number;
+  factors: {
+    factor1: {
+      value: string;
+      importance: number;
+    };
+    factor2: {
+      value: string;
+      importance: number;
+    };
+    factor3: {
+      value: string;
+      importance: number;
+    };
   };
   postCollegePlans: string;
 }
@@ -37,20 +38,23 @@ export default function MajorMentorPage() {
   const [currentStage, setCurrentStage] = useState(1);
   const [userInputs, setUserInputs] = useState<UserInputs>({
     favoriteSubject: "",
-    dropdownSelections: {
-      dropdown1: "",
-      dropdown2: "",
-      dropdown3: "",
-    },
-    importanceRatings: {
-      dropdown1: 1,
-      dropdown2: 1,
-      dropdown3: 1,
+    factors: {
+      factor1: {
+        value: "",
+        importance: 1,
+      },
+      factor2: {
+        value: "",
+        importance: 1,
+      },
+      factor3: {
+        value: "",
+        importance: 1,
+      },
     },
     postCollegePlans: "",
   });
   const [generation, setGeneration] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
   const dropdownOptions = [
     { value: "salary", label: "Salary" },
@@ -59,28 +63,6 @@ export default function MajorMentorPage() {
     { value: "helping others", label: "Helping Others" },
     { value: "job security", label: "Job Security" },
   ];
-
-  const handleStage1Submit = () => {
-    if (userInputs.favoriteSubject.trim()) {
-      setCurrentStage(2);
-    }
-  };
-
-  const handleStage2Submit = () => {
-    if (
-      userInputs.dropdownSelections.dropdown1 &&
-      userInputs.dropdownSelections.dropdown2 &&
-      userInputs.dropdownSelections.dropdown3
-    ) {
-      setCurrentStage(3);
-    }
-  };
-
-  const handleStage3Submit = () => {
-    if (userInputs.postCollegePlans.trim()) {
-      setCurrentStage(4);
-    }
-  };
 
   const handleEditStage = (stage: number) => {
     setCurrentStage(stage);
@@ -117,16 +99,16 @@ export default function MajorMentorPage() {
                   </p>
                   <div className="space-y-1">
                     <p className="text-sm">
-                      Factor 1: {userInputs.dropdownSelections.dropdown1}{" "}
-                      (Importance: {userInputs.importanceRatings.dropdown1}/5)
+                      Factor 1: {userInputs.factors.factor1.value} (Importance:{" "}
+                      {userInputs.factors.factor1.importance}/5)
                     </p>
                     <p className="text-sm">
-                      Factor 2: {userInputs.dropdownSelections.dropdown2}{" "}
-                      (Importance: {userInputs.importanceRatings.dropdown2}/5)
+                      Factor 2: {userInputs.factors.factor2.value} (Importance:{" "}
+                      {userInputs.factors.factor2.importance}/5)
                     </p>
                     <p className="text-sm">
-                      Factor 3: {userInputs.dropdownSelections.dropdown3}{" "}
-                      (Importance: {userInputs.importanceRatings.dropdown3}/5)
+                      Factor 3: {userInputs.factors.factor3.value} (Importance:{" "}
+                      {userInputs.factors.factor3.importance}/5)
                     </p>
                   </div>
                 </div>
@@ -172,218 +154,43 @@ export default function MajorMentorPage() {
 
       <div className="w-full max-w-2xl">
         {currentStage === 1 && (
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-center">
-              What was your favorite subject in school?
-            </h3>
-            <Textarea
-              className="w-full"
-              label="Favorite Subject"
-              placeholder="Tell us about your favorite subject and why you enjoyed it..."
-              value={userInputs.favoriteSubject}
-              onValueChange={(value) =>
-                setUserInputs({ ...userInputs, favoriteSubject: value })
-              }
-            />
-            <div className="flex justify-center">
-              <Button
-                color="primary"
-                isDisabled={!userInputs.favoriteSubject.trim()}
-                onClick={handleStage1Submit}
-              >
-                Next
-              </Button>
-            </div>
-          </div>
+          <TextInput
+            buttonText="Next"
+            initialValue={userInputs.favoriteSubject}
+            label="Favorite Subject"
+            placeholder="Tell us about your favorite subject and why you enjoyed it..."
+            question="What was your favorite subject in school?"
+            onSubmit={(value) => {
+              setUserInputs({ ...userInputs, favoriteSubject: value });
+              setCurrentStage(2);
+            }}
+          />
         )}
 
         {currentStage === 2 && (
-          <div className="space-y-6">
-            <h3 className="text-xl font-semibold text-center">
-              Select your factors and rate their importance:
-            </h3>
-            <div className="space-y-6">
-              <div className="space-y-3">
-                <div className="text-sm font-medium">Factor 1</div>
-                <div className="relative">
-                  <select
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={userInputs.dropdownSelections.dropdown1}
-                    onChange={(e) =>
-                      setUserInputs({
-                        ...userInputs,
-                        dropdownSelections: {
-                          ...userInputs.dropdownSelections,
-                          dropdown1: e.target.value,
-                        },
-                      })
-                    }
-                  >
-                    <option value="">Select an option</option>
-                    {dropdownOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <div className="text-sm text-gray-600">
-                    Importance: {userInputs.importanceRatings.dropdown1}/5
-                  </div>
-                  <Slider
-                    className="w-full"
-                    maxValue={5}
-                    minValue={1}
-                    step={1}
-                    value={userInputs.importanceRatings.dropdown1}
-                    onChange={(value) =>
-                      setUserInputs({
-                        ...userInputs,
-                        importanceRatings: {
-                          ...userInputs.importanceRatings,
-                          dropdown1: Array.isArray(value) ? value[0] : value,
-                        },
-                      })
-                    }
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <div className="text-sm font-medium">Factor 2</div>
-                <div className="relative">
-                  <select
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={userInputs.dropdownSelections.dropdown2}
-                    onChange={(e) =>
-                      setUserInputs({
-                        ...userInputs,
-                        dropdownSelections: {
-                          ...userInputs.dropdownSelections,
-                          dropdown2: e.target.value,
-                        },
-                      })
-                    }
-                  >
-                    <option value="">Select an option</option>
-                    {dropdownOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <div className="text-sm text-gray-600">
-                    Importance: {userInputs.importanceRatings.dropdown2}/5
-                  </div>
-                  <Slider
-                    className="w-full"
-                    maxValue={5}
-                    minValue={1}
-                    step={1}
-                    value={userInputs.importanceRatings.dropdown2}
-                    onChange={(value) =>
-                      setUserInputs({
-                        ...userInputs,
-                        importanceRatings: {
-                          ...userInputs.importanceRatings,
-                          dropdown2: Array.isArray(value) ? value[0] : value,
-                        },
-                      })
-                    }
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <div className="text-sm font-medium">Factor 3</div>
-                <div className="relative">
-                  <select
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={userInputs.dropdownSelections.dropdown3}
-                    onChange={(e) =>
-                      setUserInputs({
-                        ...userInputs,
-                        dropdownSelections: {
-                          ...userInputs.dropdownSelections,
-                          dropdown3: e.target.value,
-                        },
-                      })
-                    }
-                  >
-                    <option value="">Select an option</option>
-                    {dropdownOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <div className="text-sm text-gray-600">
-                    Importance: {userInputs.importanceRatings.dropdown3}/5
-                  </div>
-                  <Slider
-                    className="w-full"
-                    maxValue={5}
-                    minValue={1}
-                    step={1}
-                    value={userInputs.importanceRatings.dropdown3}
-                    onChange={(value) =>
-                      setUserInputs({
-                        ...userInputs,
-                        importanceRatings: {
-                          ...userInputs.importanceRatings,
-                          dropdown3: Array.isArray(value) ? value[0] : value,
-                        },
-                      })
-                    }
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-center">
-              <Button
-                color="primary"
-                isDisabled={
-                  !userInputs.dropdownSelections.dropdown1 ||
-                  !userInputs.dropdownSelections.dropdown2 ||
-                  !userInputs.dropdownSelections.dropdown3
-                }
-                onClick={handleStage2Submit}
-              >
-                Next
-              </Button>
-            </div>
-          </div>
+          <FactorSelector
+            factors={userInputs.factors}
+            options={dropdownOptions}
+            question="Select your factors and rate their importance:"
+            onSubmit={(factors) => {
+              setUserInputs({ ...userInputs, factors });
+              setCurrentStage(3);
+            }}
+          />
         )}
 
         {currentStage === 3 && (
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-center">
-              What are your plans after college?
-            </h3>
-            <Textarea
-              className="w-full"
-              label="Post-College Plans"
-              placeholder="Describe your career goals, further education plans, or other aspirations..."
-              value={userInputs.postCollegePlans}
-              onValueChange={(value) =>
-                setUserInputs({ ...userInputs, postCollegePlans: value })
-              }
-            />
-            <div className="flex justify-center">
-              <Button
-                color="primary"
-                isDisabled={!userInputs.postCollegePlans.trim()}
-                onClick={handleStage3Submit}
-              >
-                Complete
-              </Button>
-            </div>
-          </div>
+          <TextInput
+            buttonText="Complete"
+            initialValue={userInputs.postCollegePlans}
+            label="Post-College Plans"
+            placeholder="Describe your career goals, further education plans, or other aspirations..."
+            question="What are your plans after college?"
+            onSubmit={(value) => {
+              setUserInputs({ ...userInputs, postCollegePlans: value });
+              setCurrentStage(4);
+            }}
+          />
         )}
 
         {currentStage === 4 && (
@@ -391,14 +198,19 @@ export default function MajorMentorPage() {
             <h3 className="text-xl font-semibold">
               Ready to find your perfect major?
             </h3>
-            {!isLoading && !generation && (
-              <Button
-                color="success"
-                size="lg"
-                onClick={async () => {
-                  setIsLoading(true);
-
-                  const resStructure = [
+            {!generation && (
+              <PromptReq
+                buttonColor="success"
+                buttonSize="lg"
+                buttonText="Find Me A Major!"
+                loadingSubtext="Finding your perfect major match..."
+                loadingText="Loading..."
+                systemPrompt={
+                  "You are a college admission advisor who is helping a student chosing their possible major in college" +
+                  "You will receive the student's inputs in JSON of their favorite subject, 3 things that are important with their importance ratings, and post-college plans." +
+                  "You will give 3 possible majors that fit the student's inputs, and a brief summary of each major and why it is a good fit." +
+                  "You will return the response in a JSON format of the following structure: " +
+                  JSON.stringify([
                     {
                       option1: {
                         majorTitle: "Financial Planning",
@@ -415,38 +227,11 @@ export default function MajorMentorPage() {
                           "With your interest in helping others with finances and a high importance placed on job security, a major in finance or financial planning can lead to stable, rewarding careers such as financial advisor, planner, or analyst.",
                       },
                     },
-                  ];
-
-                  await fetch("/api/completion", {
-                    method: "POST",
-                    body: JSON.stringify({
-                      system:
-                        "You are a college admission advisor who is helping a student chosing their possible major in college" +
-                        "You will receive the student's inputs in JSON of their favorite subject, 3 things that are important with their importance ratings, and post-college plans." +
-                        "You will give 3 possible majors that fit the student's inputs, and a brief summary of each major and why it is a good fit." +
-                        "You will return the response in a JSON format of the following structure: " +
-                        JSON.stringify(resStructure),
-                      model: openai("gpt-3.5-turbo"),
-                      prompt: `Given the following user inputs: ${JSON.stringify(userInputs)}`,
-                    }),
-                  }).then((response) => {
-                    response.json().then((json) => {
-                      setGeneration(json.text);
-                      setIsLoading(false);
-                    });
-                  });
-                }}
-              >
-                Find Me A Major!
-              </Button>
-            )}
-            {isLoading && (
-              <div className="flex flex-col items-center space-y-2">
-                <div className="text-lg">Loading...</div>
-                <div className="text-sm text-muted-foreground">
-                  Finding your perfect major match...
-                </div>
-              </div>
+                  ])
+                }
+                userPrompt={`Given the following user inputs: ${JSON.stringify(userInputs)}`}
+                onResponse={(response) => setGeneration(response)}
+              />
             )}
             {generation && (
               <div className="space-y-4">
