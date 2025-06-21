@@ -53,7 +53,7 @@ ESAI Awesomeness is a modern, full-stack college application assistant that leve
    ```bash
    cp .env.example .env.local
    ```
-   
+
    Configure your environment variables:
    ```env
    DATABASE_URL=your_neon_database_url
