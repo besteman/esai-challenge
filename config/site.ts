@@ -12,10 +12,6 @@ export const siteConfig = {
       label: "History",
       href: "/history",
     },
-    {
-      label: "About",
-      href: "/about",
-    },
   ],
   navMenuItems: [
     {
@@ -25,10 +21,6 @@ export const siteConfig = {
     {
       label: "History",
       href: "/history",
-    },
-    {
-      label: "About",
-      href: "/about",
     },
   ],
   links: {
