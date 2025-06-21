@@ -30,15 +30,9 @@ export class NeonDBConnection {
   // Execute a query with the correct NeonDB serverless API
   public async query(sql: string, params: any[] = []) {
     try {
-      // For queries with parameters, use the .query() method
-      if (params.length > 0) {
-        const result = await this.connection.query(sql, params);
-
-        return result;
-      }
-
-      // For simple queries without parameters, use tagged template literals
-      const result = await this.connection`${sql}`;
+      // Always use the .query() method for consistency
+      // This handles both parameterized and non-parameterized queries
+      const result = await this.connection.query(sql, params);
 
       return result;
     } catch (error) {
