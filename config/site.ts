@@ -24,6 +24,6 @@ export const siteConfig = {
     },
   ],
   links: {
-    github: "https://github.com/besteman/challenge",
+    github: "https://github.com/besteman/esai-challenge",
   },
 };
