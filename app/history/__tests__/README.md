@@ -91,7 +91,7 @@ consoleSpy.mockRestore();
 
 ### Loading State Testing
 ```javascript
-mockFetch.mockImplementationOnce(() => 
+mockFetch.mockImplementationOnce(() =>
   new Promise((resolve) => setTimeout(() => resolve(response), 100))
 );
 ```

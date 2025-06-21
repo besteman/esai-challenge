@@ -481,6 +481,7 @@ describe("History Page", () => {
     render(<History />);
 
     // Click on Session History tab content area to trigger
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const sessionHistoryTab = screen.getByTestId("tab-content-session-history");
     const loadButton = screen.getByText("Load Session History");
 
