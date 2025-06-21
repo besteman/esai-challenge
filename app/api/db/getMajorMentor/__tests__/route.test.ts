@@ -91,6 +91,7 @@ describe("/api/db/getMajorMentor", () => {
       } as NextRequest;
 
       const starredData = [mockMajorMentorData[0]]; // Only starred item
+
       mockExecuteQuery.mockResolvedValue(starredData);
 
       const response = await GET(mockRequest);
@@ -116,6 +117,7 @@ describe("/api/db/getMajorMentor", () => {
       } as NextRequest;
 
       const unstarredData = [mockMajorMentorData[1]]; // Only unstarred item
+
       mockExecuteQuery.mockResolvedValue(unstarredData);
 
       const response = await GET(mockRequest);
@@ -201,6 +203,7 @@ describe("/api/db/getMajorMentor", () => {
       mockExecuteQuery.mockResolvedValue(mockMajorMentorData);
 
       const response = await GET(mockRequest);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const responseData = await response.json();
 
       // Should treat 'invalid' as falsy, so starred = false
@@ -220,6 +223,7 @@ describe("/api/db/getMajorMentor", () => {
       mockExecuteQuery.mockResolvedValue([mockMajorMentorData[0]]);
 
       const response = await GET(mockRequest);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const responseData = await response.json();
 
       // Should only process starred parameter, ignore others

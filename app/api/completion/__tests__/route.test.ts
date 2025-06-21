@@ -40,6 +40,7 @@ describe("/api/completion", () => {
 
       const mockGeneratedText =
         "Machine learning is a subset of artificial intelligence...";
+
       mockGenerateText.mockResolvedValue({ text: mockGeneratedText });
 
       const response = await POST(mockRequest);
@@ -65,6 +66,7 @@ describe("/api/completion", () => {
       } as unknown as Request;
 
       const mockGeneratedText = "I need more information to help you.";
+
       mockGenerateText.mockResolvedValue({ text: mockGeneratedText });
 
       const response = await POST(mockRequest);
@@ -90,6 +92,7 @@ describe("/api/completion", () => {
       } as unknown as Request;
 
       const mockGeneratedText = "AI stands for artificial intelligence...";
+
       mockGenerateText.mockResolvedValue({ text: mockGeneratedText });
 
       const response = await POST(mockRequest);
@@ -143,6 +146,7 @@ describe("/api/completion", () => {
       } as unknown as Request;
 
       const mockGeneratedText = "I need a prompt to respond to.";
+
       mockGenerateText.mockResolvedValue({ text: mockGeneratedText });
 
       const response = await POST(mockRequest);
@@ -167,6 +171,7 @@ describe("/api/completion", () => {
       } as unknown as Request;
 
       const mockGeneratedText = "AI stands for artificial intelligence...";
+
       mockGenerateText.mockResolvedValue({ text: mockGeneratedText });
 
       const response = await POST(mockRequest);
@@ -213,6 +218,7 @@ describe("/api/completion", () => {
       } as unknown as Request;
 
       const mockGeneratedText = "Response to long prompt";
+
       mockGenerateText.mockResolvedValue({ text: mockGeneratedText });
 
       const response = await POST(mockRequest);
@@ -240,6 +246,7 @@ describe("/api/completion", () => {
       } as unknown as Request;
 
       const mockGeneratedText = "Response handling special characters";
+
       mockGenerateText.mockResolvedValue({ text: mockGeneratedText });
 
       const response = await POST(mockRequest);

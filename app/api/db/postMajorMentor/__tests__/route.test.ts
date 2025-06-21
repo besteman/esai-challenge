@@ -305,6 +305,7 @@ describe("/api/db/postMajorMentor", () => {
 
     it("should generate unique UUID for each request", async () => {
       const mockRandomUUID = require("crypto").randomUUID;
+
       mockRandomUUID
         .mockReturnValueOnce("uuid-1")
         .mockReturnValueOnce("uuid-2");
