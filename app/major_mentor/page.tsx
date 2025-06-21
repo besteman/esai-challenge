@@ -14,6 +14,7 @@ interface MajorOption {
   majorTitle: string;
   descriptionOfMajor: string;
   whyThisMajor: string;
+  starred?: boolean;
 }
 
 interface UserInputs {
@@ -56,6 +57,9 @@ export default function MajorMentorPage() {
     postCollegePlans: "",
   });
   const [generation, setGeneration] = useState("");
+  const [starredStates, setStarredStates] = useState<{
+    [key: number]: boolean;
+  }>({});
 
   // Function to save data to the database via API
   const saveMajorRecommendation = async (generationResponse: string) => {
@@ -68,6 +72,7 @@ export default function MajorMentorPage() {
         body: JSON.stringify({
           userInputs,
           generationResponse,
+          starredStates,
         }),
       });
 
@@ -82,6 +87,47 @@ export default function MajorMentorPage() {
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error("Error saving major recommendation:", error);
+    }
+  };
+
+  // Function to toggle starred state for a major recommendation
+  const toggleStarred = async (index: number) => {
+    const newStarredStates = {
+      ...starredStates,
+      [index]: !starredStates[index],
+    };
+
+    setStarredStates(newStarredStates);
+
+    // Re-save to database with updated starred states
+    if (generation) {
+      try {
+        const response = await fetch("/api/db/postMajorMentor", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userInputs,
+            generationResponse: generation,
+            starredStates: newStarredStates,
+          }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || "Failed to update starred status");
+        }
+
+        // eslint-disable-next-line no-console
+        console.log("Successfully updated starred status:", result);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("Error updating starred status:", error);
+        // Revert the state change on error
+        setStarredStates(starredStates);
+      }
     }
   };
 
@@ -234,11 +280,20 @@ export default function MajorMentorPage() {
                           const option: MajorOption = item[optionKey];
 
                           return (
-                            <Card key={index} className="w-full">
+                            <Card key={index} className="w-full relative">
                               <CardHeader className="pb-0 pt-4 px-4 flex-col items-start">
-                                <h4 className="font-bold text-large text-primary">
-                                  {option.majorTitle}
-                                </h4>
+                                <div className="flex justify-between items-start w-full">
+                                  <h4 className="font-bold text-large text-primary">
+                                    {option.majorTitle}
+                                  </h4>
+                                  <button
+                                    className="text-2xl hover:scale-110 transition-transform"
+                                    type="button"
+                                    onClick={() => toggleStarred(index)}
+                                  >
+                                    {starredStates[index] ? "⭐" : "☆"}
+                                  </button>
+                                </div>
                               </CardHeader>
                               <CardBody className="overflow-visible py-2 px-4">
                                 <div className="space-y-3">
