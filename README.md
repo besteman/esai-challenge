@@ -114,8 +114,8 @@ app/
 
 ```bash
 # Development
-npm run dev          # Start development server (compatible with Babel)
-npm run dev:turbo    # Start development server with Turbopack (faster, but incompatible with Babel)
+npm run dev          # Start development server (uses SWC)
+npm run dev:turbo    # Start development server with Turbopack (faster builds)
 npm run build        # Build for production
 npm run start        # Start production server
 
@@ -133,14 +133,14 @@ npm test -- --coverage # Run tests with coverage report
 This project supports two development modes:
 
 1. **Standard Development** (`npm run dev`):
-   - Compatible with Babel configuration
-   - Supports all testing features
-   - Slightly slower build times
+   - Uses Next.js SWC compiler for fast builds
+   - Compatible with all Next.js features including fonts
+   - Recommended for most development
 
 2. **Turbopack Development** (`npm run dev:turbo`):
-   - Faster build times and hot reloading
-   - Currently incompatible with Babel
-   - Use this when not actively running tests
+   - Experimental faster build times and hot reloading
+   - Cutting-edge Next.js bundler for enhanced performance
+   - Use when you want maximum speed
 
 ### Testing Strategy
 
