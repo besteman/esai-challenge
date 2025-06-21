@@ -125,49 +125,49 @@ export default function StoryStrategistPage() {
       <div className="w-full max-w-2xl space-y-4 mb-6">
         <EditableCard
           show={currentStage > 1}
-          title="Favorite Subject:"
+          title="When do you feel most like yourself?"
           value={userInputs.feelMostLikeYourself}
           onEdit={() => handleEditStage(1)}
         />
 
         <EditableCard
           show={currentStage > 2}
-          title="Post-College Plans:"
+          title="Tell us about a hardship or challenge"
           value={userInputs.hardship}
           onEdit={() => handleEditStage(2)}
         />
 
         <EditableCard
           show={currentStage > 3}
-          title="Favorite Subject:"
+          title="What's something you never get bored of?"
           value={userInputs.neverGetBored}
           onEdit={() => handleEditStage(3)}
         />
 
         <EditableCard
           show={currentStage > 4}
-          title="Post-College Plans:"
+          title="Tell us about your family"
           value={userInputs.familyBackground}
           onEdit={() => handleEditStage(4)}
         />
 
         <EditableCard
           show={currentStage > 5}
-          title="Favorite Subject:"
+          title="What are you most proud of achieving?"
           value={userInputs.proudAchievement}
           onEdit={() => handleEditStage(5)}
         />
 
         <EditableCard
           show={currentStage > 6}
-          title="Post-College Plans:"
+          title="How do you want to be known in 10 years?"
           value={userInputs.knownIn10Years}
           onEdit={() => handleEditStage(6)}
         />
 
         <EditableCard
           show={currentStage > 7}
-          title="Post-College Plans:"
+          title="What sets you apart from your friends and classmates?"
           value={userInputs.whatSetsYouApart}
           onEdit={() => handleEditStage(7)}
         />
