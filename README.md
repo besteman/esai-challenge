@@ -114,7 +114,8 @@ app/
 
 ```bash
 # Development
-npm run dev          # Start development server with Turbopack
+npm run dev          # Start development server (compatible with Babel)
+npm run dev:turbo    # Start development server with Turbopack (faster, but incompatible with Babel)
 npm run build        # Build for production
 npm run start        # Start production server
 
@@ -126,6 +127,20 @@ npm run test         # Run Jest test suite
 npm test -- --watch # Run tests in watch mode
 npm test -- --coverage # Run tests with coverage report
 ```
+
+### Development Options
+
+This project supports two development modes:
+
+1. **Standard Development** (`npm run dev`):
+   - Compatible with Babel configuration
+   - Supports all testing features
+   - Slightly slower build times
+
+2. **Turbopack Development** (`npm run dev:turbo`):
+   - Faster build times and hot reloading
+   - Currently incompatible with Babel
+   - Use this when not actively running tests
 
 ### Testing Strategy
 

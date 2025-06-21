@@ -177,8 +177,17 @@ const config: Config = {
   // testRunner: "jest-circus/runner",
 
   // A map from regular expressions to paths to transformers
+  preset: "ts-jest",
   transform: {
-    "^.+\\.(js|jsx|ts|tsx)$": "babel-jest",
+    "^.+\\.(ts|tsx)$": [
+      "ts-jest",
+      {
+        tsconfig: {
+          jsx: "react-jsx",
+        },
+      },
+    ],
+    "^.+\\.(js|jsx)$": "babel-jest",
   },
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
