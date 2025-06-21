@@ -17,7 +17,7 @@ export const ProductCard = ({
 }: ProductCardsProps) => {
   return (
     <Link href={href}>
-      <Card className="py-4 max-w-xs cursor-pointer hover:shadow-lg transition-shadow duration-200">
+      <Card className="py-4 max-w-xs cursor-pointer hover:shadow-lg transition-shadow duration-200 bg-slate-500">
         <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
           <h4 className="font-bold text-large">{title}</h4>
           <p className="text-muted-foreground text-small break-words whitespace-normal">
