@@ -1,0 +1,108 @@
+import { neon } from "@neondatabase/serverless";
+
+// Database connection utility for NeonDB
+export class NeonDBConnection {
+  private static instance: NeonDBConnection;
+  private connection: ReturnType<typeof neon>;
+
+  private constructor() {
+    if (!process.env.DATABASE_URL) {
+      throw new Error("DATABASE_URL environment variable is not set");
+    }
+
+    this.connection = neon(process.env.DATABASE_URL);
+  }
+
+  // Singleton pattern to ensure only one connection instance
+  public static getInstance(): NeonDBConnection {
+    if (!NeonDBConnection.instance) {
+      NeonDBConnection.instance = new NeonDBConnection();
+    }
+
+    return NeonDBConnection.instance;
+  }
+
+  // Get the database connection
+  public getConnection() {
+    return this.connection;
+  }
+
+  // Execute a query with the correct NeonDB serverless API
+  public async query(sql: string, params: any[] = []) {
+    try {
+      // For queries with parameters, use the .query() method
+      if (params.length > 0) {
+        const result = await this.connection.query(sql, params);
+
+        return result;
+      }
+
+      // For simple queries without parameters, use tagged template literals
+      const result = await this.connection`${sql}`;
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // Execute multiple queries in sequence
+  public async transaction(queries: Array<{ sql: string; params?: any[] }>) {
+    try {
+      const results = [];
+
+      for (const { sql, params = [] } of queries) {
+        const result = await this.query(sql, params);
+
+        results.push(result);
+      }
+
+      return results;
+    } catch (error) {
+      throw error;
+    }
+  }
+}
+
+// Helper function to get database connection
+export const getNeonDB = () => {
+  return NeonDBConnection.getInstance().getConnection();
+};
+
+// Helper function to execute queries
+export const executeQuery = async (sql: string, params: any[] = []) => {
+  const db = NeonDBConnection.getInstance();
+
+  return await db.query(sql, params);
+};
+
+// Helper function to execute transactions
+export const executeTransaction = async (
+  queries: Array<{ sql: string; params?: any[] }>,
+) => {
+  const db = NeonDBConnection.getInstance();
+
+  return await db.transaction(queries);
+};
+
+// Export the connection instance for direct access if needed
+export default NeonDBConnection;
+
+// Usage examples:
+/*
+// Basic usage:
+import { getNeonDB, executeQuery } from '@/lib/db';
+
+// Get connection directly for simple queries
+const sql = getNeonDB();
+const result = await sql`SELECT * FROM users`;
+
+// Use helper function for parameterized queries
+const users = await executeQuery('SELECT * FROM users WHERE id = $1', [userId]);
+
+// Use transactions
+await executeTransaction([
+  { sql: 'INSERT INTO users (name) VALUES ($1)', params: ['John'] },
+  { sql: 'UPDATE profiles SET updated_at = NOW() WHERE user_id = $1', params: [userId] }
+]);
+*/

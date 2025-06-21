@@ -57,6 +57,34 @@ export default function MajorMentorPage() {
   });
   const [generation, setGeneration] = useState("");
 
+  // Function to save data to the database via API
+  const saveMajorRecommendation = async (generationResponse: string) => {
+    try {
+      const response = await fetch("/api/db/postMajorMentor", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userInputs,
+          generationResponse,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to save data");
+      }
+
+      // eslint-disable-next-line no-console
+      console.log("Successfully saved:", result);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("Error saving major recommendation:", error);
+    }
+  };
+
   const dropdownOptions = [
     { value: "salary", label: "Salary" },
     { value: "work-life balance", label: "Work-life Balance" },
@@ -184,7 +212,10 @@ export default function MajorMentorPage() {
                   ])
                 }
                 userPrompt={`Given the following user inputs: ${JSON.stringify(userInputs)}`}
-                onResponse={(response) => setGeneration(response)}
+                onResponse={async (response) => {
+                  setGeneration(response);
+                  await saveMajorRecommendation(response);
+                }}
               />
             )}
             {generation && (

@@ -27,6 +27,7 @@
     "@heroui/switch": "2.2.19",
     "@heroui/system": "2.4.17",
     "@heroui/theme": "2.4.17",
+    "@neondatabase/serverless": "^1.0.1",
     "@react-aria/ssr": "3.9.9",
     "@react-aria/visually-hidden": "3.8.24",
     "ai": "^4.3.16",
