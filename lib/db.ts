@@ -81,22 +81,3 @@ export const executeTransaction = async (
 
 // Export the connection instance for direct access if needed
 export default NeonDBConnection;
-
-// Usage examples:
-/*
-// Basic usage:
-import { getNeonDB, executeQuery } from '@/lib/db';
-
-// Get connection directly for simple queries
-const sql = getNeonDB();
-const result = await sql`SELECT * FROM users`;
-
-// Use helper function for parameterized queries
-const users = await executeQuery('SELECT * FROM users WHERE id = $1', [userId]);
-
-// Use transactions
-await executeTransaction([
-  { sql: 'INSERT INTO users (name) VALUES ($1)', params: ['John'] },
-  { sql: 'UPDATE profiles SET updated_at = NOW() WHERE user_id = $1', params: [userId] }
-]);
-*/
