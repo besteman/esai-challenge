@@ -7,7 +7,6 @@ import { ProductWelcome } from "@/components/productWelcome";
 import { PromptReq } from "@/components/stream/promptReq";
 import { TextInput } from "@/components/question/textInput";
 import { EditableCard } from "@/components/summary/editableCard";
-import { FactorsCard } from "@/components/summary/factorsCard";
 
 interface SummaryOption {
   title: string;
