@@ -12,6 +12,7 @@ interface CollegeOption {
   collegeName: string;
   descriptionOfCollege: string;
   whyThisCollege: string;
+  starred?: boolean;
 }
 
 interface UserInputs {
@@ -22,7 +23,7 @@ interface UserInputs {
   unweightedGPA: string;
 }
 
-export default function ScholMatchPage() {
+export default function SchoolMatchPage() {
   const [currentStage, setCurrentStage] = useState(1);
   const [userInputs, setUserInputs] = useState<UserInputs>({
     location: "",
@@ -32,6 +33,84 @@ export default function ScholMatchPage() {
     unweightedGPA: "",
   });
   const [generation, setGeneration] = useState("");
+  const [starredStates, setStarredStates] = useState<{
+    [key: number]: boolean;
+  }>({});
+
+  // Function to toggle starred state for a college recommendation
+  const toggleStarred = async (index: number) => {
+    // Update local state immediately for instant UI feedback
+    const newStarredStates = {
+      ...starredStates,
+      [index]: !starredStates[index],
+    };
+
+    setStarredStates(newStarredStates);
+
+    // Persist the change to the backend if we have a generation to save
+    if (generation) {
+      try {
+        const response = await fetch("/api/db/postSchoolMatch", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userInputs,
+            generationResponse: generation,
+            starredStates: newStarredStates,
+          }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || "Failed to save starred state");
+        }
+
+        // eslint-disable-next-line no-console
+        console.log("Successfully updated starred state:", result);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("Error updating starred state:", error);
+
+        // Revert the local state change if the API call failed
+        setStarredStates({
+          ...starredStates,
+          [index]: starredStates[index],
+        });
+      }
+    }
+  };
+
+  // Function to save data to the database via API
+  const saveSchoolRecommendation = async (generationResponse: string) => {
+    try {
+      const response = await fetch("/api/db/postSchoolMatch", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userInputs,
+          generationResponse,
+          starredStates,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to save data");
+      }
+
+      // eslint-disable-next-line no-console
+      console.log("Successfully saved:", result);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("Error saving school recommendation:", error);
+    }
+  };
 
   const handleEditStage = (stage: number) => {
     setCurrentStage(stage);
@@ -51,7 +130,7 @@ export default function ScholMatchPage() {
           show={currentStage > 2}
           title="Location Requirements:"
           value={userInputs.locationRequirements}
-          onEdit={() => handleEditStage(1)}
+          onEdit={() => handleEditStage(2)}
         />
 
         <EditableCard
@@ -199,7 +278,10 @@ export default function ScholMatchPage() {
                   ])
                 }
                 userPrompt={`Given the following user inputs: ${JSON.stringify(userInputs)}`}
-                onResponse={(response) => setGeneration(response)}
+                onResponse={async (response) => {
+                  setGeneration(response);
+                  await saveSchoolRecommendation(response);
+                }}
               />
             )}
             {generation && (
@@ -218,11 +300,20 @@ export default function ScholMatchPage() {
                           const option: CollegeOption = item[optionKey];
 
                           return (
-                            <Card key={index} className="w-full">
+                            <Card key={index} className="w-full relative">
                               <CardHeader className="pb-0 pt-4 px-4 flex-col items-start">
-                                <h4 className="font-bold text-large text-primary">
-                                  {option.collegeName}
-                                </h4>
+                                <div className="flex justify-between items-start w-full">
+                                  <h4 className="font-bold text-large text-primary">
+                                    {option.collegeName}
+                                  </h4>
+                                  <button
+                                    className="text-2xl hover:scale-110 transition-transform"
+                                    type="button"
+                                    onClick={() => toggleStarred(index)}
+                                  >
+                                    {starredStates[index] ? "⭐" : "☆"}
+                                  </button>
+                                </div>
                               </CardHeader>
                               <CardBody className="overflow-visible py-2 px-4">
                                 <div className="space-y-3">

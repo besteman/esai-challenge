@@ -2,7 +2,7 @@ import { randomUUID } from "crypto";
 
 import { NextRequest, NextResponse } from "next/server";
 
-import { executeTransaction } from "@/lib/db";
+import { executeQuery } from "@/lib/db";
 
 interface SchoolMatchOption {
   collegeName: string;
@@ -13,7 +13,7 @@ interface SchoolMatchOption {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { userInputs, generationResponse, starredStates } = body;
+    const { userInputs, generationResponse, starredStates = {} } = body;
 
     // Validate required fields
     if (!userInputs || !generationResponse) {
@@ -23,63 +23,79 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate a UUID for this group of recommendations
-    const outputGroup = randomUUID();
-
     // Parse the generation response to extract individual recommendations
-    let schoolOptions: SchoolMatchOption[] = [];
+    let parsedResponse;
 
     try {
-      const parsedResponse = JSON.parse(generationResponse);
-
-      schoolOptions = parsedResponse.map((item: any) => {
-        const optionKey = Object.keys(item)[0];
-
-        return item[optionKey];
-      });
+      parsedResponse = JSON.parse(generationResponse);
     } catch {
       return NextResponse.json(
-        { error: "Invalid generation response format" },
+        { error: "Invalid JSON in generationResponse" },
         { status: 400 },
       );
     }
 
-    // Prepare insert queries for each school recommendation
-    const insertQueries = schoolOptions.map((option, index) => ({
-      sql: `
-        INSERT INTO school_match_maker (
-          output_group, location, location_requirements, future_plans,
-          ideal_campus_experience, unweighted_gpa, college_name,
-          description_of_college, why_this_college, starred, created_at
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())
-      `,
-      params: [
-        outputGroup,
+    const results = [];
+
+    // Generate a UUID for this output group (all recommendations from this generation)
+    const outputGroupId = randomUUID();
+
+    // First, delete any existing records for this user session (based on user inputs)
+    // This ensures we don't have duplicates when users toggle stars multiple times
+    await executeQuery(
+      `DELETE FROM school_match_maker
+       WHERE location = $1
+       AND location_requirements = $2
+       AND future_plans = $3
+       AND ideal_campus_experience = $4
+       AND unweighted_gpa = $5`,
+      [
         userInputs.location,
         userInputs.locationRequirements,
         userInputs.futurePlans,
         userInputs.idealCampusExperience,
         userInputs.unweightedGPA,
-        option.collegeName,
-        option.descriptionOfCollege,
-        option.whyThisCollege,
-        starredStates?.[index] || false,
       ],
-    }));
+    );
 
-    // Execute all insert queries in a transaction
-    const results = await executeTransaction(insertQueries);
+    // Save each school recommendation to the database
+    for (let index = 0; index < parsedResponse.length; index++) {
+      const item = parsedResponse[index];
+      const optionKey = Object.keys(item)[0];
+      const option: SchoolMatchOption = item[optionKey];
+      const isStarred = starredStates[index] || false;
+
+      const result = await executeQuery(
+        `INSERT INTO school_match_maker
+         (output_group, location, location_requirements, future_plans,
+          ideal_campus_experience, unweighted_gpa, college_name,
+          description_of_college, why_this_college, starred, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())
+         RETURNING id`,
+        [
+          outputGroupId,
+          userInputs.location,
+          userInputs.locationRequirements,
+          userInputs.futurePlans,
+          userInputs.idealCampusExperience,
+          userInputs.unweightedGPA,
+          option.collegeName,
+          option.descriptionOfCollege,
+          option.whyThisCollege,
+          isStarred,
+        ],
+      );
+
+      results.push(result);
+    }
 
     return NextResponse.json({
       success: true,
-      data: {
-        outputGroup,
-        insertedCount: results.length,
-        insertedRecords: results, // Return the inserted records with IDs
-        userInputs,
-        schoolOptions,
-      },
-      message: "School match recommendations saved successfully",
+      message: `Successfully saved ${results.length} school recommendations`,
+      outputGroupId,
+      insertedIds: results
+        .map((result) => (result as any)?.[0]?.id)
+        .filter(Boolean),
     });
   } catch (error) {
     // eslint-disable-next-line no-console
