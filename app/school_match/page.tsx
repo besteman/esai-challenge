@@ -7,13 +7,7 @@ import { ProductWelcome } from "@/components/productWelcome";
 import { PromptReq } from "@/components/stream/promptReq";
 import { TextInput } from "@/components/question/textInput";
 import { EditableCard } from "@/components/summary/editableCard";
-
-interface CollegeOption {
-  collegeName: string;
-  descriptionOfCollege: string;
-  whyThisCollege: string;
-  starred?: boolean;
-}
+import { SchoolMatchOption } from "@/types";
 
 interface UserInputs {
   location: string;
@@ -297,7 +291,7 @@ export default function SchoolMatchPage() {
                       return parsedGeneration.map(
                         (item: any, index: number) => {
                           const optionKey = Object.keys(item)[0];
-                          const option: CollegeOption = item[optionKey];
+                          const option: SchoolMatchOption = item[optionKey];
 
                           return (
                             <Card key={index} className="w-full relative">

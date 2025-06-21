@@ -9,13 +9,7 @@ import { TextInput } from "@/components/question/textInput";
 import { FactorSelector } from "@/components/question/factorSelector";
 import { EditableCard } from "@/components/summary/editableCard";
 import { FactorsCard } from "@/components/summary/factorsCard";
-
-interface MajorOption {
-  majorTitle: string;
-  descriptionOfMajor: string;
-  whyThisMajor: string;
-  starred?: boolean;
-}
+import { MajorOption } from "@/types";
 
 interface UserInputs {
   favoriteSubject: string;
