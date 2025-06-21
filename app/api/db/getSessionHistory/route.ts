@@ -1,0 +1,97 @@
+import { NextRequest, NextResponse } from "next/server";
+
+import { executeQuery } from "@/lib/db";
+
+interface SessionHistoryItem {
+  output_group: string;
+  table_name: string;
+  display_name: string;
+  display_title: string;
+  display_description: string;
+  created_at: string;
+}
+
+interface SessionHistoryResponse {
+  success: boolean;
+  data: SessionHistoryItem[];
+  count: number;
+  message: string;
+}
+
+interface ErrorResponse {
+  success: false;
+  error: string;
+  details: string;
+}
+
+export async function GET(
+  _request: NextRequest,
+): Promise<NextResponse<SessionHistoryResponse | ErrorResponse>> {
+  try {
+    // Query to get distinct output_group values from all tables with their creation dates
+    const sessionHistoryQuery = `
+      SELECT DISTINCT
+        output_group,
+        'school_match' as table_name,
+        'School Match Maker' as display_name,
+        MIN(college_name) as display_title,
+        MIN(why_this_college) as display_description,
+        MIN(created_at) as created_at
+      FROM school_match_maker
+      WHERE output_group IS NOT NULL
+      GROUP BY output_group
+
+      UNION ALL
+
+      SELECT DISTINCT
+        output_group,
+        'major_mentor' as table_name,
+        'Major Mentor' as display_name,
+        MIN(major_title) as display_title,
+        MIN(description_of_major) as display_description,
+        MIN(created_at) as created_at
+      FROM major_mentor
+      WHERE output_group IS NOT NULL
+      GROUP BY output_group
+
+      UNION ALL
+
+      SELECT DISTINCT
+        output_group,
+        'story_strategist' as table_name,
+        'Story Strategist' as display_name,
+        MIN(title) as display_title,
+        MIN(summary) as display_description,
+        MIN(created_at) as created_at
+      FROM story_strategist
+      WHERE output_group IS NOT NULL
+      GROUP BY output_group
+
+      ORDER BY created_at DESC
+    `;
+
+    const results = await executeQuery(sessionHistoryQuery);
+
+    const sessionHistory = Array.isArray(results) ? results : [];
+
+    const response: SessionHistoryResponse = {
+      success: true,
+      data: sessionHistory as SessionHistoryItem[],
+      count: sessionHistory.length,
+      message: "Session history fetched successfully",
+    };
+
+    return NextResponse.json(response);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error("Error fetching session history:", error);
+
+    const errorResponse: ErrorResponse = {
+      success: false,
+      error: "Failed to fetch session history",
+      details: error instanceof Error ? error.message : "Unknown error",
+    };
+
+    return NextResponse.json(errorResponse, { status: 500 });
+  }
+}

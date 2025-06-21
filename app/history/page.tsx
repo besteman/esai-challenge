@@ -46,6 +46,15 @@ interface StoryStrategistItem {
   created_at: string;
 }
 
+interface SessionHistoryItem {
+  output_group: string;
+  table_name: string;
+  display_name: string;
+  display_title: string;
+  display_description: string;
+  created_at: string;
+}
+
 type DropdownOption =
   | "favorites"
   | "major_mentor"
@@ -67,6 +76,10 @@ export default function History() {
   const [storyStrategistItems, setStoryStrategistItems] = useState<
     StoryStrategistItem[]
   >([]);
+  const [sessionHistoryItems, setSessionHistoryItems] = useState<
+    SessionHistoryItem[]
+  >([]);
+  const [isLoadingSessionHistory, setIsLoadingSessionHistory] = useState(false);
 
   const fetchData = async (option: DropdownOption) => {
     setIsLoading(true);
@@ -148,6 +161,40 @@ export default function History() {
       default:
         return "Select an option";
     }
+  };
+
+  const fetchSessionHistory = async () => {
+    setIsLoadingSessionHistory(true);
+
+    try {
+      const response = await fetch("/api/db/getSessionHistory");
+      const data = await response.json();
+
+      if (data.success) {
+        setSessionHistoryItems(data.data);
+      } else {
+        // eslint-disable-next-line no-console
+        console.error("Failed to fetch session history");
+      }
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("Error fetching session history:", error);
+    } finally {
+      setIsLoadingSessionHistory(false);
+    }
+  };
+
+  const formatDateTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const year = date.getFullYear();
+    const hours = date.getHours();
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    const displayHours = hours % 12 || 12;
+
+    return `${month}/${day}/${year} ${displayHours}:${minutes} ${ampm}`;
   };
 
   const renderFavorites = () => (
@@ -395,8 +442,65 @@ export default function History() {
             </div>
           </Tab>
           <Tab key="session" title="Session History">
-            <div className="p-4">
-              <p>Your session history will appear here.</p>
+            <div className="space-y-4">
+              {sessionHistoryItems.length === 0 && !isLoadingSessionHistory ? (
+                <div className="text-center">
+                  <Button
+                    className="mb-4"
+                    color="primary"
+                    variant="bordered"
+                    onClick={fetchSessionHistory}
+                  >
+                    Load Session History
+                  </Button>
+                  <p className="text-gray-500">
+                    Click to load your session history.
+                  </p>
+                </div>
+              ) : isLoadingSessionHistory ? (
+                <Card>
+                  <CardBody>
+                    <p className="text-center">Loading session history...</p>
+                  </CardBody>
+                </Card>
+              ) : (
+                sessionHistoryItems.map((item) => (
+                  <Card
+                    key={`${item.table_name}-${item.output_group}`}
+                    className="w-full"
+                  >
+                    <CardHeader className="pb-0 pt-4 px-4 flex-col items-start">
+                      <div className="flex justify-between items-start w-full">
+                        <div>
+                          <h4 className="font-bold text-large text-primary">
+                            {item.display_name}
+                          </h4>
+                          <p className="text-sm text-gray-500">
+                            {formatDateTime(item.created_at)}
+                          </p>
+                        </div>
+                        <div className="text-sm text-gray-400">
+                          Session ID: {item.output_group.slice(0, 8)}...
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardBody className="overflow-visible py-2 px-4">
+                      <div className="space-y-2">
+                        <div>
+                          <h5 className="font-semibold text-sm text-primary">
+                            {item.display_title}
+                          </h5>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600">
+                            {item.display_description}
+                          </p>
+                        </div>
+                      </div>
+                    </CardBody>
+                  </Card>
+                ))
+              )}
             </div>
           </Tab>
         </Tabs>
