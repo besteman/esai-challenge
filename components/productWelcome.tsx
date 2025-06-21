@@ -16,7 +16,7 @@ export const ProductWelcome = ({
   return (
     <div className="flex flex-col items-center justify-center text-center max-w-2xl mx-auto py-8">
       <h1 className="text-4xl font-bold mb-4">{title}</h1>
-      <p className="text-lg text-muted-foreground">{description}</p>
+      <p className="text-lg text-muted-foreground mb-6">{description}</p>
       <Card>
         <CardBody>
           <p>{heading}</p>

@@ -222,6 +222,7 @@ export default function SchoolMatchPage() {
         {currentStage === 5 && (
           <TextInput
             buttonText="Complete"
+            disableWordCount={true}
             initialValue={userInputs.unweightedGPA}
             label="Unweighted GPA"
             placeholder="example: 3.5"
