@@ -37,6 +37,84 @@ export default function StoryStrategistPage() {
     postCollegePlans: "",
   });
   const [generation, setGeneration] = useState("");
+  const [starredStates, setStarredStates] = useState<{
+    [key: number]: boolean;
+  }>({});
+
+  // Function to toggle starred state for a story recommendation
+  const toggleStarred = async (index: number) => {
+    // Update local state immediately for instant UI feedback
+    const newStarredStates = {
+      ...starredStates,
+      [index]: !starredStates[index],
+    };
+
+    setStarredStates(newStarredStates);
+
+    // Persist the change to the backend if we have a generation to save
+    if (generation) {
+      try {
+        const response = await fetch("/api/db/postStoryStrategist", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userInputs,
+            generationResponse: generation,
+            starredStates: newStarredStates,
+          }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || "Failed to save starred state");
+        }
+
+        // eslint-disable-next-line no-console
+        console.log("Successfully updated starred state:", result);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("Error updating starred state:", error);
+
+        // Revert the local state change if the API call failed
+        setStarredStates({
+          ...starredStates,
+          [index]: starredStates[index],
+        });
+      }
+    }
+  };
+
+  // Function to save data to the database via API
+  const saveStoryRecommendation = async (generationResponse: string) => {
+    try {
+      const response = await fetch("/api/db/postStoryStrategist", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userInputs,
+          generationResponse,
+          starredStates,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to save data");
+      }
+
+      // eslint-disable-next-line no-console
+      console.log("Successfully saved:", result);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("Error saving story recommendation:", error);
+    }
+  };
 
   const handleEditStage = (stage: number) => {
     setCurrentStage(stage);
@@ -236,13 +314,16 @@ export default function StoryStrategistPage() {
                       option2: {
                         title: "Empathetic Innovator",
                         summary:
-                          "Use your values of helping others with your experience navigating ADHD to showcase resilience and empathy in your personal statement. This connection emphasizes your desire to lead and innovate, giving admission advisors a compelling narrative about your growth. It’s a standout story that shows personal challenges fueling a passion for making a difference!",
+                          "Use your values of helping others with your experience navigating ADHD to showcase resilience and empathy in your personal statement. This connection emphasizes your desire to lead and innovate, giving admission advisors a compelling narrative about your growth. It's a standout story that shows personal challenges fueling a passion for making a difference!",
                       },
                     },
                   ])
                 }
                 userPrompt={`Given the following user inputs: ${JSON.stringify(userInputs)}`}
-                onResponse={(response) => setGeneration(response)}
+                onResponse={async (response) => {
+                  setGeneration(response);
+                  await saveStoryRecommendation(response);
+                }}
               />
             )}
             {generation && (
@@ -263,9 +344,18 @@ export default function StoryStrategistPage() {
                           return (
                             <Card key={index} className="w-full">
                               <CardHeader className="pb-0 pt-4 px-4 flex-col items-start">
-                                <h4 className="font-bold text-large text-primary">
-                                  {option.title}
-                                </h4>
+                                <div className="flex justify-between items-start w-full">
+                                  <h4 className="font-bold text-large text-primary">
+                                    {option.title}
+                                  </h4>
+                                  <button
+                                    className="text-2xl hover:scale-110 transition-transform"
+                                    type="button"
+                                    onClick={() => toggleStarred(index)}
+                                  >
+                                    {starredStates[index] ? "⭐" : "☆"}
+                                  </button>
+                                </div>
                               </CardHeader>
                               <CardBody className="overflow-visible py-2 px-4">
                                 <div className="space-y-3">
