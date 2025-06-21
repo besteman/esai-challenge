@@ -6,12 +6,14 @@ interface ProductCardsProps {
   title: string;
   description: string;
   href: string;
+  image?: string;
 }
 
 export const ProductCard = ({
   title,
   description,
   href,
+  image,
 }: ProductCardsProps) => {
   return (
     <Link href={href}>
@@ -24,9 +26,9 @@ export const ProductCard = ({
         </CardHeader>
         <CardBody className="overflow-visible py-2">
           <Image
-            alt="Card background"
+            alt={`${title} illustration`}
             className="object-cover rounded-xl"
-            src="https://heroui.com/images/hero-card-complete.jpeg"
+            src={image || "https://heroui.com/images/hero-card-complete.jpeg"}
             width={270}
           />
         </CardBody>

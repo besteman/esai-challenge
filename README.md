@@ -51,13 +51,7 @@ ESAI Awesomeness is a modern, full-stack college application assistant that leve
 
 3. **Environment Setup**
    ```bash
-   cp .env.example .env.local
-   ```
-
-   Configure your environment variables:
-   ```env
-   DATABASE_URL=your_neon_database_url
-   OPENAI_API_KEY=your_openai_api_key
+   vercel env pull .env.development.local
    ```
 
 4. **Database Setup**

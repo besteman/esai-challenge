@@ -13,16 +13,19 @@ export default function Home() {
         <ProductCard
           description="Lets see where the sorting hat puts you."
           href="/school_match"
+          image="/school.png"
           title="School Match Maker"
         />
         <ProductCard
           description="What is your major? Lets find out together!"
           href="/major_mentor"
+          image="/major.png"
           title="Major Mentor"
         />
         <ProductCard
           description="What is your story?"
           href="/story_strategist"
+          image="/story.png"
           title="Story Strategist"
         />
       </div>
