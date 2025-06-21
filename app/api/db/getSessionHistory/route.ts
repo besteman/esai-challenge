@@ -1,28 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { executeQuery } from "@/lib/db";
-
-interface SessionHistoryItem {
-  output_group: string;
-  table_name: string;
-  display_name: string;
-  display_title: string;
-  display_description: string;
-  created_at: string;
-}
-
-interface SessionHistoryResponse {
-  success: boolean;
-  data: SessionHistoryItem[];
-  count: number;
-  message: string;
-}
-
-interface ErrorResponse {
-  success: false;
-  error: string;
-  details: string;
-}
+import {
+  ErrorResponse,
+  SessionHistoryItem,
+  SessionHistoryResponse,
+} from "@/types";
 
 export async function GET(
   _request: NextRequest,

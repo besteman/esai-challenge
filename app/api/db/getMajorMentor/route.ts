@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { executeQuery } from "@/lib/db";
+import { ErrorResponse, MajorMentorRecord, MajorMentorResponse } from "@/types";
 
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+): Promise<NextResponse<MajorMentorResponse | ErrorResponse>> {
   try {
     const { searchParams } = new URL(request.url);
     const starred = searchParams.get("starred");
@@ -23,24 +26,29 @@ export async function GET(request: NextRequest) {
     // Execute the query
     const results = await executeQuery(query, params);
 
+    const majorMentorData = Array.isArray(results)
+      ? (results as MajorMentorRecord[])
+      : [];
+
     // Return the results
-    return NextResponse.json({
+    const response: MajorMentorResponse = {
       success: true,
-      data: results || [],
-      count: Array.isArray(results) ? results.length : 0,
+      data: majorMentorData,
+      count: majorMentorData.length,
       message: "Major mentor recommendations fetched successfully",
-    });
+    };
+
+    return NextResponse.json(response);
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error("Error fetching major mentor data:", error);
 
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to fetch major mentor recommendations",
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 },
-    );
+    const errorResponse: ErrorResponse = {
+      success: false,
+      error: "Failed to fetch major mentor recommendations",
+      details: error instanceof Error ? error.message : "Unknown error",
+    };
+
+    return NextResponse.json(errorResponse, { status: 500 });
   }
 }

@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { executeQuery } from "@/lib/db";
+import {
+  ErrorResponse,
+  StoryStrategistRecord,
+  StoryStrategistResponse,
+} from "@/types";
 
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+): Promise<NextResponse<StoryStrategistResponse | ErrorResponse>> {
   try {
     const { searchParams } = new URL(request.url);
     const starred = searchParams.get("starred");
@@ -23,13 +30,19 @@ export async function GET(request: NextRequest) {
     // Execute the query
     const results = await executeQuery(query, params);
 
+    const storyStrategistData = Array.isArray(results)
+      ? (results as StoryStrategistRecord[])
+      : [];
+
     // Return the results
-    return NextResponse.json({
+    const response: StoryStrategistResponse = {
       success: true,
-      data: results || [],
-      count: Array.isArray(results) ? results.length : 0,
+      data: storyStrategistData,
+      count: storyStrategistData.length,
       message: "Story strategist recommendations fetched successfully",
-    });
+    };
+
+    return NextResponse.json(response);
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error("Error fetching story strategist data:", error);

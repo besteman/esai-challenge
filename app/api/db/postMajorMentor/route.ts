@@ -3,27 +3,7 @@ import { randomUUID } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 
 import { executeQuery } from "@/lib/db";
-
-interface MajorOption {
-  majorTitle: string;
-  descriptionOfMajor: string;
-  whyThisMajor: string;
-  starred?: boolean;
-}
-
-interface MajorMentorRequest {
-  userInputs: {
-    favoriteSubject: string;
-    factors: {
-      factor1: { value: string; importance: number };
-      factor2: { value: string; importance: number };
-      factor3: { value: string; importance: number };
-    };
-    postCollegePlans: string;
-  };
-  generationResponse: string;
-  starredStates?: { [key: number]: boolean };
-}
+import { MajorMentorRequest, MajorOption } from "@/types";
 
 export async function POST(request: NextRequest) {
   try {

@@ -3,16 +3,11 @@ import { randomUUID } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 
 import { executeQuery } from "@/lib/db";
-
-interface SchoolMatchOption {
-  collegeName: string;
-  descriptionOfCollege: string;
-  whyThisCollege: string;
-}
+import { SchoolMatchOption, SchoolMatchRequest } from "@/types";
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body: SchoolMatchRequest = await request.json();
     const { userInputs, generationResponse, starredStates = {} } = body;
 
     // Validate required fields

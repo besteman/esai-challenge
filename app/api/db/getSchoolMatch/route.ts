@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { executeQuery } from "@/lib/db";
+import { ErrorResponse, SchoolMatchRecord, SchoolMatchResponse } from "@/types";
 
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+): Promise<NextResponse<SchoolMatchResponse | ErrorResponse>> {
   try {
     const { searchParams } = new URL(request.url);
     const starred = searchParams.get("starred");
@@ -23,24 +26,29 @@ export async function GET(request: NextRequest) {
     // Execute the query
     const results = await executeQuery(query, params);
 
+    const schoolMatchData = Array.isArray(results)
+      ? (results as SchoolMatchRecord[])
+      : [];
+
     // Return the results
-    return NextResponse.json({
+    const response: SchoolMatchResponse = {
       success: true,
-      data: results || [],
-      count: Array.isArray(results) ? results.length : 0,
+      data: schoolMatchData,
+      count: schoolMatchData.length,
       message: "School match recommendations fetched successfully",
-    });
+    };
+
+    return NextResponse.json(response);
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error("Error fetching school match data:", error);
 
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to fetch school match recommendations",
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 },
-    );
+    const errorResponse: ErrorResponse = {
+      success: false,
+      error: "Failed to fetch school match recommendations",
+      details: error instanceof Error ? error.message : "Unknown error",
+    };
+
+    return NextResponse.json(errorResponse, { status: 500 });
   }
 }

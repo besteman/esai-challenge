@@ -1,33 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { executeQuery } from "@/lib/db";
-
-interface StarredItem {
-  type: "school_match" | "major_mentor" | "story_strategist";
-  id: number;
-  title: string;
-  description: string;
-  why_recommendation: string;
-  created_at: string;
-}
-
-interface AllStarredResponse {
-  success: boolean;
-  data: StarredItem[];
-  count: number;
-  breakdown: {
-    school_matches: number;
-    major_mentors: number;
-    story_strategists: number;
-  };
-  message: string;
-}
-
-interface ErrorResponse {
-  success: false;
-  error: string;
-  details: string;
-}
+import { AllStarredResponse, ErrorResponse, StarredItem } from "@/types";
 
 export async function GET(
   _request: NextRequest,

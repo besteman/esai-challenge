@@ -3,26 +3,7 @@ import { randomUUID } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 
 import { executeQuery } from "@/lib/db";
-
-interface StoryOption {
-  title: string;
-  summary: string;
-}
-
-interface StoryStrategistRequest {
-  userInputs: {
-    feelMostLikeYourself: string;
-    hardship: string;
-    neverGetBored: string;
-    familyBackground: string;
-    proudAchievement: string;
-    knownIn10Years: string;
-    whatSetsYouApart: string;
-    postCollegePlans?: string;
-  };
-  generationResponse: string;
-  starredStates?: { [key: number]: boolean };
-}
+import { StoryOption, StoryStrategistRequest } from "@/types";
 
 export async function POST(request: NextRequest) {
   try {
