@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --font-chorine: "chorine-large", sans-serif;
+}
+
+h1 {
+  font-family: var(--font-chorine);
+  font-weight: 500;
+  font-style: normal;
+}
