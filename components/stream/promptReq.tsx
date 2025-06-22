@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { openai } from "@ai-sdk/openai";
 
 import { ElevatedButton } from "../elevatedButton";
 
@@ -14,6 +13,7 @@ interface PromptReqProps {
   disabled?: boolean;
   loadingText?: string;
   loadingSubtext?: string;
+  model?: string;
 }
 
 export const PromptReq = ({
@@ -25,6 +25,7 @@ export const PromptReq = ({
   disabled = false,
   loadingText = "Loading...",
   loadingSubtext,
+  model = "gpt-4.1-nano",
 }: PromptReqProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -37,7 +38,7 @@ export const PromptReq = ({
         method: "POST",
         body: JSON.stringify({
           system: systemPrompt,
-          model: openai("gpt-3.5-turbo"),
+          model,
           prompt: userPrompt,
         }),
       });
