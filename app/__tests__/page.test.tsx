@@ -16,18 +16,11 @@ jest.mock("@/config/site", () => ({
   },
 }));
 
-// Mock the primitives
-jest.mock("@/components/primitives", () => ({
-  title: jest.fn(() => "mock-title-class"),
-  subtitle: jest.fn(() => "mock-subtitle-class"),
-}));
-
 // Mock the ProductCard component
 jest.mock("@/components/productCards", () => ({
-  ProductCard: ({ title, description, href }: any) => (
+  ProductCard: ({ href, image }: any) => (
     <div data-href={href} data-testid="product-card">
-      <h4 data-testid="card-title">{title}</h4>
-      <p data-testid="card-description">{description}</p>
+      <span data-testid="card-image">{image}</span>
     </div>
   ),
 }));
@@ -47,13 +40,15 @@ describe("Home Page", () => {
   });
 
   describe("Initial Render", () => {
-    it("renders the main heading with site name", () => {
+    it("renders the main heading with site description", () => {
       render(<Home />);
 
-      expect(screen.getByText("ESAI Awesomeness")).toBeInTheDocument();
+      expect(
+        screen.getByText("Helping the next generation of learners"),
+      ).toBeInTheDocument();
     });
 
-    it("renders the site description", () => {
+    it("renders the site description as heading", () => {
       render(<Home />);
 
       expect(
@@ -64,19 +59,27 @@ describe("Home Page", () => {
     it("applies correct CSS classes to heading", () => {
       render(<Home />);
 
-      const heading = screen.getByText("ESAI Awesomeness");
+      const heading = screen.getByText(
+        "Helping the next generation of learners",
+      );
 
-      expect(heading).toHaveClass("mock-title-class");
+      expect(heading).toHaveClass("text-center", "mb-5", "font-bold");
     });
 
-    it("applies correct CSS classes to description", () => {
+    it("has responsive text sizing classes", () => {
       render(<Home />);
 
       const description = screen.getByText(
         "Helping the next generation of learners",
       );
 
-      expect(description).toHaveClass("mock-subtitle-class");
+      expect(description).toHaveClass(
+        "text-3xl",
+        "sm:text-md",
+        "md:text-3xl",
+        "lg:text-4xl",
+        "xl:text-5xl",
+      );
     });
   });
 
@@ -89,7 +92,7 @@ describe("Home Page", () => {
       expect(productCards).toHaveLength(3);
     });
 
-    it("renders School Match Maker card with correct content", () => {
+    it("renders School Match card with correct href", () => {
       render(<Home />);
 
       const cards = screen.getAllByTestId("product-card");
@@ -98,13 +101,9 @@ describe("Home Page", () => {
       );
 
       expect(schoolCard).toBeInTheDocument();
-      expect(screen.getByText("School Match Maker")).toBeInTheDocument();
-      expect(
-        screen.getByText("Lets see where the sorting hat puts you."),
-      ).toBeInTheDocument();
     });
 
-    it("renders Major Mentor card with correct content", () => {
+    it("renders Major Mentor card with correct href", () => {
       render(<Home />);
 
       const cards = screen.getAllByTestId("product-card");
@@ -113,13 +112,9 @@ describe("Home Page", () => {
       );
 
       expect(majorCard).toBeInTheDocument();
-      expect(screen.getByText("Major Mentor")).toBeInTheDocument();
-      expect(
-        screen.getByText("What is your major? Lets find out together!"),
-      ).toBeInTheDocument();
     });
 
-    it("renders Story Strategist card with correct content", () => {
+    it("renders Story Strategist card with correct href", () => {
       render(<Home />);
 
       const cards = screen.getAllByTestId("product-card");
@@ -128,8 +123,6 @@ describe("Home Page", () => {
       );
 
       expect(storyCard).toBeInTheDocument();
-      expect(screen.getByText("Story Strategist")).toBeInTheDocument();
-      expect(screen.getByText("What is your story?")).toBeInTheDocument();
     });
 
     it("has correct href attributes for navigation", () => {
@@ -147,7 +140,9 @@ describe("Home Page", () => {
     it("has proper section structure with correct classes", () => {
       render(<Home />);
 
-      const section = screen.getByText("ESAI Awesomeness").closest("section");
+      const section = screen
+        .getByText("Helping the next generation of learners")
+        .closest("section");
 
       expect(section).toHaveClass(
         "flex",
@@ -163,13 +158,15 @@ describe("Home Page", () => {
     it("has proper text container structure", () => {
       render(<Home />);
 
-      const textContainer = screen.getByText("ESAI Awesomeness").closest("div");
+      const textContainer = screen
+        .getByText("Helping the next generation of learners")
+        .closest("div");
 
       expect(textContainer).toHaveClass(
-        "inline-block",
-        "max-w-xl",
-        "text-center",
+        "flex",
         "justify-center",
+        "items-center",
+        "w-full",
       );
     });
 
@@ -195,26 +192,23 @@ describe("Home Page", () => {
     it("has proper heading hierarchy", () => {
       render(<Home />);
 
-      const mainHeading = screen.getByText("ESAI Awesomeness");
+      const mainHeading = screen.getByText(
+        "Helping the next generation of learners",
+      );
 
       expect(mainHeading.tagName).toBe("H1");
     });
 
-    it("has descriptive text for each product card", () => {
+    it("has card elements with proper structure", () => {
       render(<Home />);
 
-      const cardTitles = screen.getAllByTestId("card-title");
-      const cardDescriptions = screen.getAllByTestId("card-description");
+      const cards = screen.getAllByTestId("product-card");
 
-      expect(cardTitles).toHaveLength(3);
-      expect(cardDescriptions).toHaveLength(3);
+      expect(cards).toHaveLength(3);
 
-      cardTitles.forEach((title) => {
-        expect(title.textContent).toBeTruthy();
-      });
-
-      cardDescriptions.forEach((description) => {
-        expect(description.textContent).toBeTruthy();
+      cards.forEach((card) => {
+        expect(card).toBeInTheDocument();
+        expect(card).toHaveAttribute("data-href");
       });
     });
   });
@@ -239,56 +233,32 @@ describe("Home Page", () => {
       });
     });
 
-    it("has unique titles for each product card", () => {
+    it("has unique href attributes for each product card", () => {
       render(<Home />);
 
-      const titles = screen
-        .getAllByTestId("card-title")
-        .map((el) => el.textContent);
-      const uniqueTitles = new Set(titles);
+      const cards = screen.getAllByTestId("product-card");
+      const hrefs = cards.map((card) => card.getAttribute("data-href"));
+      const uniqueHrefs = new Set(hrefs);
 
-      expect(uniqueTitles.size).toBe(titles.length);
-      expect(uniqueTitles).toEqual(
-        new Set(["School Match Maker", "Major Mentor", "Story Strategist"]),
+      expect(uniqueHrefs.size).toBe(hrefs.length);
+      expect(uniqueHrefs).toEqual(
+        new Set(["/school_match", "/major_mentor", "/story_strategist"]),
       );
     });
 
-    it("has unique descriptions for each product card", () => {
+    it("renders with expected image props", () => {
       render(<Home />);
 
-      const descriptions = screen
-        .getAllByTestId("card-description")
-        .map((el) => el.textContent);
-      const uniqueDescriptions = new Set(descriptions);
+      const images = screen.getAllByTestId("card-image");
 
-      expect(uniqueDescriptions.size).toBe(descriptions.length);
-      expect(uniqueDescriptions).toEqual(
-        new Set([
-          "Lets see where the sorting hat puts you.",
-          "What is your major? Lets find out together!",
-          "What is your story?",
-        ]),
-      );
+      expect(images).toHaveLength(3);
+      expect(images[0]).toHaveTextContent("/Match-Maker.png");
+      expect(images[1]).toHaveTextContent("/Major-Mentor.png");
+      expect(images[2]).toHaveTextContent("Story-Strategist.png");
     });
   });
 
   describe("Component Integration", () => {
-    it("calls title primitive function", () => {
-      const { title } = require("@/components/primitives");
-
-      render(<Home />);
-
-      expect(title).toHaveBeenCalled();
-    });
-
-    it("calls subtitle primitive function", () => {
-      const { subtitle } = require("@/components/primitives");
-
-      render(<Home />);
-
-      expect(subtitle).toHaveBeenCalled();
-    });
-
     it("renders ProductCard components with correct props", () => {
       render(<Home />);
 
@@ -298,19 +268,16 @@ describe("Home Page", () => {
 
       const expectedCards = [
         {
-          title: "School Match Maker",
-          description: "Lets see where the sorting hat puts you.",
           href: "/school_match",
+          image: "/Match-Maker.png",
         },
         {
-          title: "Major Mentor",
-          description: "What is your major? Lets find out together!",
           href: "/major_mentor",
+          image: "/Major-Mentor.png",
         },
         {
-          title: "Story Strategist",
-          description: "What is your story?",
           href: "/story_strategist",
+          image: "Story-Strategist.png",
         },
       ];
 
@@ -318,9 +285,20 @@ describe("Home Page", () => {
         const card = cards[index];
 
         expect(card).toHaveAttribute("data-href", expectedCard.href);
-        expect(screen.getByText(expectedCard.title)).toBeInTheDocument();
-        expect(screen.getByText(expectedCard.description)).toBeInTheDocument();
+
+        const imageElement = card.querySelector('[data-testid="card-image"]');
+
+        expect(imageElement).toHaveTextContent(expectedCard.image);
       });
+    });
+
+    it("uses siteConfig values correctly", () => {
+      render(<Home />);
+
+      // Verify that the site description is used as the heading
+      expect(
+        screen.getByText("Helping the next generation of learners"),
+      ).toBeInTheDocument();
     });
   });
 
