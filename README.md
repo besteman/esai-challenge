@@ -135,7 +135,6 @@ ESAI Awesomeness is a modern, full-stack college application assistant that leve
 - **API Routes**: Next.js API routes with TypeScript
 - **Database**: NeonDB (serverless PostgreSQL)
 - **AI Integration**: OpenAI SDK with streaming support
-- **Validation**: Zod for type-safe data validation
 
 ### Project Structure
 ```
