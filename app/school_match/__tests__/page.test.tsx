@@ -153,7 +153,7 @@ describe("SchoolMatchPage", () => {
     const futurePlansInput = screen.getByTestId("text-input-field");
 
     await user.type(futurePlansInput, "Software engineering career");
-    await user.click(screen.getByText("Complete"));
+    await user.click(screen.getByText("Next"));
 
     // Stage 4: Ideal Campus Experience
     await waitFor(() => {
@@ -162,7 +162,7 @@ describe("SchoolMatchPage", () => {
     const campusExpInput = screen.getByTestId("text-input-field");
 
     await user.type(campusExpInput, "Large campus with research opportunities");
-    await user.click(screen.getByText("Complete"));
+    await user.click(screen.getByText("Next"));
 
     // Stage 5: Unweighted GPA
     await waitFor(() => {
@@ -171,7 +171,7 @@ describe("SchoolMatchPage", () => {
     const gpaInput = screen.getByTestId("text-input-field");
 
     await user.type(gpaInput, "3.8");
-    await user.click(screen.getByText("Complete"));
+    await user.click(screen.getByText("Next"));
 
     // Stage 6: Generation stage
     await waitFor(() => {
@@ -497,7 +497,7 @@ describe("SchoolMatchPage", () => {
       screen.getByTestId("text-input-field"),
       "Computer science career",
     );
-    await user.click(screen.getByText("Complete"));
+    await user.click(screen.getByText("Next"));
 
     // Should show 3 editable cards
     await waitFor(() => {
@@ -531,7 +531,7 @@ describe("SchoolMatchPage", () => {
     const futurePlansInput = screen.getByTestId("text-input-field");
 
     await user.type(futurePlansInput, "Software engineering career");
-    await user.click(screen.getByText("Complete"));
+    await user.click(screen.getByText("Next"));
 
     // Stage 4: Ideal Campus Experience
     await waitFor(() => {
@@ -540,7 +540,7 @@ describe("SchoolMatchPage", () => {
     const campusExpInput = screen.getByTestId("text-input-field");
 
     await user.type(campusExpInput, "Large campus with research opportunities");
-    await user.click(screen.getByText("Complete"));
+    await user.click(screen.getByText("Next"));
 
     // Stage 5: Unweighted GPA
     await waitFor(() => {
@@ -549,7 +549,7 @@ describe("SchoolMatchPage", () => {
     const gpaInput = screen.getByTestId("text-input-field");
 
     await user.type(gpaInput, "3.8");
-    await user.click(screen.getByText("Complete"));
+    await user.click(screen.getByText("Next"));
 
     // Wait for generation stage
     await waitFor(() => {

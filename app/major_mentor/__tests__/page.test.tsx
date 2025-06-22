@@ -173,7 +173,7 @@ describe("MajorMentorPage", () => {
     const postCollegePlansInput = screen.getByTestId("text-input-field");
 
     await user.type(postCollegePlansInput, "Graduate school");
-    await user.click(screen.getByText("Complete"));
+    await user.click(screen.getByText("Next"));
 
     // Stage 4: Generation stage
     await waitFor(() => {
@@ -402,7 +402,7 @@ describe("MajorMentorPage", () => {
     const postCollegePlansInput = screen.getByTestId("text-input-field");
 
     await user.type(postCollegePlansInput, "Graduate school");
-    await user.click(screen.getByText("Complete"));
+    await user.click(screen.getByText("Next"));
 
     // Wait for generation stage
     await waitFor(() => {

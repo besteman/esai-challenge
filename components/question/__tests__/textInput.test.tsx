@@ -2,15 +2,10 @@ import { render, screen, fireEvent } from "@testing-library/react";
 
 import { TextInput } from "../textInput";
 
-// Mock HeroUI components
-jest.mock("@heroui/button", () => ({
-  Button: ({ children, isDisabled, color, onClick, ...props }: any) => (
-    <button
-      data-color={color}
-      disabled={isDisabled}
-      {...props}
-      onClick={onClick}
-    >
+// Mock ElevatedButton component
+jest.mock("../../elevatedButton", () => ({
+  ElevatedButton: ({ children, disabled, onClick, ...props }: any) => (
+    <button disabled={disabled} {...props} onClick={onClick}>
       {children}
     </button>
   ),
@@ -68,13 +63,12 @@ describe("TextInput Component", () => {
       expect(screen.getByRole("button", { name: "Next" })).toBeInTheDocument();
     });
 
-    it("renders with custom button text and color", () => {
+    it("renders with custom button text", () => {
       render(<TextInput {...defaultProps} buttonText="Submit" />);
 
       const button = screen.getByRole("button", { name: "Submit" });
 
       expect(button).toBeInTheDocument();
-      expect(button).toHaveAttribute("data-color", "success");
     });
 
     it("renders with initial value", () => {
