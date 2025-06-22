@@ -1,5 +1,5 @@
 import { siteConfig } from "@/config/site";
-import { title, subtitle } from "@/components/primitives";
+import { title } from "@/components/primitives";
 import { ProductCard } from "@/components/productCards";
 
 export default function Home() {

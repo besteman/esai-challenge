@@ -409,7 +409,7 @@ export default function History() {
               <div className="flex justify-center">
                 <Dropdown>
                   <DropdownTrigger>
-                    <Button className="capitalize" variant="bordered">
+                    <Button className="capitalize" variant="shadow">
                       {getSelectedOptionLabel()}
                     </Button>
                   </DropdownTrigger>
