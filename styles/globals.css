@@ -6,6 +6,12 @@
   --font-droog: "droog", sans-serif;
 }
 
+/* Apply Funnel Display to body and all elements except h1 */
+body, body * {
+  font-family: var(--font-anonymous), sans-serif;
+}
+
+/* Keep droog font specifically for h1 tags */
 h1 {
   font-family: var(--font-droog);
   font-weight: 900;
