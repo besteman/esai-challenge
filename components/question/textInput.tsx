@@ -75,7 +75,7 @@ export const TextInput = ({
   const wordCount = value.trim() ? value.trim().split(/\s+/).length : 0;
   const hasError = !!error;
   const isSubmitDisabled = disabled || !!validateInput(value);
-  const meetsMinimum = wordCount >= 20;
+  const meetsMinimum = wordCount >= 5;
 
   return (
     <div className="space-y-4">
@@ -90,7 +90,7 @@ export const TextInput = ({
                 <span
                   className={meetsMinimum ? "text-green-600" : "text-gray-500"}
                 >
-                  minimum 20
+                  minimum 5
                 </span>
                 )
               </span>
