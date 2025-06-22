@@ -14,16 +14,31 @@ import clsx from "clsx";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
-import { GithubIcon, Logo } from "@/components/icons";
+import { GithubIcon } from "@/components/icons";
 
 export const Navbar = () => {
   return (
-    <HeroUINavbar maxWidth="xl" position="sticky">
+    <HeroUINavbar
+      className="absolute top-0 left-0 right-0 z-50"
+      maxWidth="xl"
+      position="static"
+      style={{
+        backgroundColor: "transparent",
+        backdropFilter: "none",
+        background: "none",
+        boxShadow: "none",
+        border: "none",
+      }}
+    >
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1" href="/">
-            <Logo />
-            <p className="font-bold text-inherit">ESAI</p>
+            <p
+              className="font-bold text-3xl text-inherit"
+              style={{ fontFamily: '"droog", sans-serif', fontWeight: 900 }}
+            >
+              ESAI
+            </p>
           </NextLink>
         </NavbarBrand>
         <ul className="hidden lg:flex gap-4 justify-start ml-2">

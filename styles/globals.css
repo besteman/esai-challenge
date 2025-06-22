@@ -3,11 +3,11 @@
 @tailwind utilities;
 
 :root {
-  --font-chorine: "chorine-large", sans-serif;
+  --font-droog: "droog", sans-serif;
 }
 
 h1 {
-  font-family: var(--font-chorine);
-  font-weight: 500;
+  font-family: var(--font-droog);
+  font-weight: 900;
   font-style: normal;
 }

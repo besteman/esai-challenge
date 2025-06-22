@@ -5,27 +5,28 @@ import { ProductCard } from "@/components/productCards";
 export default function Home() {
   return (
     <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-      <div className="inline-block max-w-xl text-center justify-center">
-        <h1 className={title()}>{siteConfig.name}</h1>
-        <p className={subtitle()}>{siteConfig.description}</p>
+      <div className="flex justify-center items-center w-full">
+        <h1 className={`${title()} whitespace-nowrap text-center mb-10`}>
+          {siteConfig.description}
+        </h1>
       </div>
       <div className="flex flex-row gap-4 justify-center items-start flex-wrap">
         <ProductCard
           description="Lets see where the sorting hat puts you."
           href="/school_match"
-          image="/major.png"
+          image="/Light-Bulb.png"
           title="School Match Maker"
         />
         <ProductCard
           description="What is your major? Lets find out together!"
           href="/major_mentor"
-          image="/school.png"
+          image="/Neon-Books.png"
           title="Major Mentor"
         />
         <ProductCard
           description="What is your story?"
           href="/story_strategist"
-          image="/story.png"
+          image="/Graduation-Cap.png"
           title="Story Strategist"
         />
       </div>

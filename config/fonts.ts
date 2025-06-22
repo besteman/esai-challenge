@@ -10,12 +10,12 @@ export const fontMono = FontMono({
   variable: "--font-mono",
 });
 
-// Adobe Typekit font
-export const fontChorine = {
-  variable: "--font-chorine",
+// Droog font
+export const fontDroog = {
+  variable: "--font-droog",
   style: {
-    fontFamily: '"chorine-large", sans-serif',
-    fontWeight: 500,
+    fontFamily: '"droog", sans-serif',
+    fontWeight: 900,
     fontStyle: "normal",
   },
 };
