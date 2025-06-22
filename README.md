@@ -53,6 +53,8 @@ ESAI Awesomeness is a modern, full-stack college application assistant that leve
    ```bash
    vercel env pull .env.development.local
    ```
+  or
+  Create a `env.local` file and set a DATABASE_URL and OPENAI_API_KEY
 
 4. **Database Setup**
    - Create tables for: `major_mentor`, `school_match`, `story_strategist`, `session_history`
