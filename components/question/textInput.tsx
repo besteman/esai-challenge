@@ -1,21 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@heroui/button";
 import { Textarea } from "@heroui/input";
+
+import { ElevatedButton } from "../elevatedButton";
 
 interface TextInputProps {
   question: string;
   label: string;
   placeholder: string;
   buttonText?: string;
-  buttonColor?:
-    | "default"
-    | "primary"
-    | "secondary"
-    | "success"
-    | "warning"
-    | "danger";
   initialValue?: string;
   onSubmit: (value: string) => void;
   disabled?: boolean;
@@ -27,7 +21,6 @@ export const TextInput = ({
   label,
   placeholder,
   buttonText = "Next",
-  buttonColor = "primary",
   initialValue = "",
   onSubmit,
   disabled = false,
@@ -112,13 +105,9 @@ export const TextInput = ({
         />
       </div>
       <div className="flex justify-center">
-        <Button
-          color={buttonColor}
-          isDisabled={isSubmitDisabled}
-          onClick={handleSubmit}
-        >
+        <ElevatedButton disabled={isSubmitDisabled} onClick={handleSubmit}>
           {buttonText}
-        </Button>
+        </ElevatedButton>
       </div>
     </div>
   );

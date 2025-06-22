@@ -292,8 +292,6 @@ export default function StoryStrategistPage() {
             </h3>
             {!generation && (
               <PromptReq
-                buttonColor="success"
-                buttonSize="lg"
                 buttonText="Create my stories!"
                 loadingSubtext="Finding your perfect stories..."
                 loadingText="Loading..."

@@ -155,7 +155,7 @@ export default function SchoolMatchPage() {
     <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
       <ProductWelcome
         description="Find the best schools and programs for you based on your strengths, goals, and budget."
-        heading="Let’s make you a match!"
+        heading="Let's make you a match!"
         subtitle="Congrats on beginning the process of finding your dream school."
         title="School Match Maker"
       />
@@ -193,7 +193,7 @@ export default function SchoolMatchPage() {
 
         {currentStage === 3 && (
           <TextInput
-            buttonText="Complete"
+            buttonText="Next"
             initialValue={userInputs.futurePlans}
             label="Future Plans"
             placeholder="Tell us about your future major or career goals"
@@ -207,7 +207,7 @@ export default function SchoolMatchPage() {
 
         {currentStage === 4 && (
           <TextInput
-            buttonText="Complete"
+            buttonText="Next"
             initialValue={userInputs.idealCampusExperience}
             label="Ideal Campus Experience"
             placeholder="Smaller campus, more community, etc."
@@ -221,7 +221,7 @@ export default function SchoolMatchPage() {
 
         {currentStage === 5 && (
           <TextInput
-            buttonText="Complete"
+            buttonText="Next"
             disableWordCount={true}
             initialValue={userInputs.unweightedGPA}
             label="Unweighted GPA"
@@ -241,8 +241,6 @@ export default function SchoolMatchPage() {
             </h3>
             {!generation && (
               <PromptReq
-                buttonColor="success"
-                buttonSize="lg"
                 buttonText="Find Me A College!"
                 loadingSubtext="Finding your perfect college match..."
                 loadingText="Loading..."

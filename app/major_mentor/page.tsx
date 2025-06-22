@@ -203,7 +203,7 @@ export default function MajorMentorPage() {
 
         {currentStage === 3 && (
           <TextInput
-            buttonText="Complete"
+            buttonText="Next"
             initialValue={userInputs.postCollegePlans}
             label="Post-College Plans"
             placeholder="Describe your career goals, further education plans, or other aspirations..."
@@ -222,8 +222,6 @@ export default function MajorMentorPage() {
             </h3>
             {!generation && (
               <PromptReq
-                buttonColor="success"
-                buttonSize="lg"
                 buttonText="Find Me A Major!"
                 loadingSubtext="Finding your perfect major match..."
                 loadingText="Loading..."

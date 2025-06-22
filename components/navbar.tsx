@@ -35,7 +35,11 @@ export const Navbar = () => {
           <NextLink className="flex justify-start items-center gap-1" href="/">
             <p
               className="font-bold text-3xl text-inherit"
-              style={{ fontFamily: '"droog", sans-serif', fontWeight: 900 }}
+              style={{
+                fontFamily: '"droog", sans-serif',
+                fontWeight: 900,
+                color: "#231651",
+              }}
             >
               ESAI
             </p>

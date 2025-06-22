@@ -69,13 +69,7 @@ describe("TextInput Component", () => {
     });
 
     it("renders with custom button text and color", () => {
-      render(
-        <TextInput
-          {...defaultProps}
-          buttonColor="success"
-          buttonText="Submit"
-        />,
-      );
+      render(<TextInput {...defaultProps} buttonText="Submit" />);
 
       const button = screen.getByRole("button", { name: "Submit" });
 

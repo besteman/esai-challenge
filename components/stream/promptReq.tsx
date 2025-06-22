@@ -1,19 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@heroui/button";
 import { openai } from "@ai-sdk/openai";
+
+import { ElevatedButton } from "../elevatedButton";
 
 interface PromptReqProps {
   buttonText?: string;
-  buttonColor?:
-    | "default"
-    | "primary"
-    | "secondary"
-    | "success"
-    | "warning"
-    | "danger";
-  buttonSize?: "sm" | "md" | "lg";
   systemPrompt: string;
   userPrompt: string;
   onResponse: (response: string) => void;
@@ -25,8 +18,6 @@ interface PromptReqProps {
 
 export const PromptReq = ({
   buttonText = "Submit",
-  buttonColor = "primary",
-  buttonSize = "md",
   systemPrompt,
   userPrompt,
   onResponse,
@@ -76,13 +67,8 @@ export const PromptReq = ({
   }
 
   return (
-    <Button
-      color={buttonColor}
-      isDisabled={disabled}
-      size={buttonSize}
-      onClick={handleSubmit}
-    >
+    <ElevatedButton disabled={disabled} onClick={handleSubmit}>
       {buttonText}
-    </Button>
+    </ElevatedButton>
   );
 };
