@@ -139,23 +139,71 @@ ESAI Awesomeness is a modern, full-stack college application assistant that leve
 
 ### Project Structure
 ```
-app/
-├── api/                    # API routes
-│   ├── completion/        # AI completion endpoint
-│   └── db/                # Database operations
-│       ├── getAllStarred/     # Fetch starred items
-│       ├── getMajorMentor/    # Major recommendations
-│       ├── getSchoolMatch/    # School recommendations
-│       ├── getStoryStrategist/ # Story recommendations
-│       ├── getSessionHistory/ # Historical data
-│       ├── postMajorMentor/   # Save major data
-│       ├── postSchoolMatch/   # Save school data
-│       └── postStoryStrategist/ # Save story data
-├── major_mentor/          # Major recommendation flow
-├── school_match/          # School matching flow
-├── story_strategist/      # Story development flow
-├── history/               # Data management interface
-└── __tests__/             # Test suites
+├── app/                             # Next.js App Router directory
+│   ├── __tests__/                   # App-level test files
+│   ├── api/                         # API routes
+│   │   ├── completion/              # AI completion endpoint
+│   │   └── db/                      # Database operations
+│   │       ├── getAllStarred/       # Fetch all starred items
+│   │       ├── getMajorMentor/      # Fetch major recommendations
+│   │       ├── getSchoolMatch/      # Fetch school recommendations
+│   │       ├── getSessionHistory/   # Fetch session history
+│   │       ├── getStoryStrategist/  # Fetch story recommendations
+│   │       ├── postMajorMentor/     # Save major mentor data
+│   │       ├── postSchoolMatch/     # Save school match data
+│   │       └── postStoryStrategist/ # Save story strategist data
+│   ├── history/                     # Data management and history interface
+│   ├── major_mentor/                # Major recommendation flow
+│   ├── school_match/                # School matching flow
+│   ├── story_strategist/            # Story development flow
+│   ├── error.tsx                    # Global error boundary
+│   ├── layout.tsx                   # Root layout component
+│   ├── page.tsx                     # Homepage
+│   └── providers.tsx                # App providers (theme, etc.)
+├── components/                      # Reusable UI components
+│   ├── question/                    # Form input components
+│   │   └── textInput.tsx            # Multi-stage text input
+│   ├── stream/                      # AI streaming components
+│   │   └── promptReq.tsx            # AI prompt request handler
+│   ├── summary/                     # Result display components
+│   │   └── editableCard.tsx         # Editable recommendation cards
+│   ├── elevatedButton.tsx           # Custom elevated button
+│   ├── icons.tsx                    # Icon components
+│   ├── navbar.tsx                   # Navigation bar
+│   ├── primitives.ts                # UI primitives
+│   ├── productCards.tsx             # Feature showcase cards
+│   ├── productWelcome.tsx           # Welcome/intro component
+│   └── theme-switch.tsx             # Dark/light mode toggle
+├── config/                          # Configuration files
+│   ├── fonts.ts                     # Font configurations
+│   └── site.ts                      # Site metadata and config
+├── lib/                             # Utility libraries
+│   ├── __tests__/                   # Library test files
+│   ├── prompts/                     # AI prompt templates
+│   ├── db.ts                        # Database connection and utilities
+│   └── prompts.ts                   # AI prompt configurations
+├── public/                          # Static assets
+│   ├── favicon.ico                  # Site favicon
+│   ├── next.svg                     # Next.js logo
+│   └── vercel.svg                   # Vercel logo
+├── styles/                          # Global styles
+│   └── globals.css                  # Global CSS and Tailwind imports
+├── types/                           # TypeScript type definitions
+│   ├── __tests__/                   # Type definition tests
+│   ├── database.ts                  # Database-related types
+│   ├── index.ts                     # Common type exports
+│   └── prompts.ts                   # AI prompt types
+├── coverage/                        # Test coverage reports
+├── .vscode/                         # VS Code workspace settings
+├── eslint.config.mjs                # ESLint configuration
+├── jest.config.ts                   # Jest testing configuration
+├── jest.setup.ts                    # Jest test setup
+├── next.config.js                   # Next.js configuration
+├── package.json                     # Dependencies and scripts
+├── tailwind.config.js               # Tailwind CSS configuration
+├── tsconfig.json                    # TypeScript configuration
+├── README.md                        # Project documentation
+└── TEST_SUMMARY.md                  # Comprehensive test documentation
 ```
 
 ## 🔧 Development
@@ -353,23 +401,6 @@ npm run build
 npm run start
 ```
 
-### Database Migration
-Ensure your NeonDB instance has the required tables with proper schemas for each recommendation type.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Development Guidelines
-- Follow TypeScript best practices
-- Write tests for new features
-- Maintain consistent code formatting
-- Update documentation as needed
-
 ## 📊 Performance
 
 - **Fast Development**: Turbopack for rapid rebuilds
@@ -383,10 +414,6 @@ Ensure your NeonDB instance has the required tables with proper schemas for each
 - Input validation with Zod
 - SQL injection prevention via parameterized queries
 - Type-safe API endpoints
-
-## 📄 License
-
-This project is private and proprietary.
 
 ## 🙋 Support
 
