@@ -179,6 +179,7 @@ export default function MajorMentorPage() {
         {currentStage === 1 && (
           <TextInput
             buttonText="Next"
+            disableWordCount={true}
             initialValue={userInputs.favoriteSubject}
             label="Favorite Subject"
             placeholder="Tell us about your favorite subject and why you enjoyed it..."

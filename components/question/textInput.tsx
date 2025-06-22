@@ -43,8 +43,8 @@ export const TextInput = ({
 
     const wordCount = trimmedInput.split(/\s+/).length;
 
-    if (wordCount < 20) {
-      return "Input must be at least 20 words";
+    if (wordCount < 5) {
+      return "Input must be at least 5 words";
     }
     if (wordCount > 50) {
       return "Input cannot exceed 50 words";

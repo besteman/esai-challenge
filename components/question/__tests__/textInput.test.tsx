@@ -84,7 +84,7 @@ describe("TextInput Component", () => {
 
       expect(screen.getByTestId("description")).toBeInTheDocument();
       expect(screen.getByTestId("description")).toHaveTextContent(
-        "0/50 words (minimum 20)",
+        "0/50 words (minimum 5)",
       );
     });
 
@@ -96,11 +96,11 @@ describe("TextInput Component", () => {
       fireEvent.change(textarea, { target: { value: "This is a test" } });
 
       expect(screen.getByTestId("description")).toHaveTextContent(
-        "4/50 words (minimum 20)",
+        "4/50 words (minimum 5)",
       );
     });
 
-    it("shows minimum text in gray when under 20 words", () => {
+    it("shows minimum text in gray when under 5 words", () => {
       render(<TextInput {...defaultProps} />);
 
       const textarea = screen.getByLabelText("Experience");
@@ -111,22 +111,22 @@ describe("TextInput Component", () => {
       const minimumSpan = description.querySelector("span.text-gray-500");
 
       expect(minimumSpan).toBeInTheDocument();
-      expect(minimumSpan).toHaveTextContent("minimum 20");
+      expect(minimumSpan).toHaveTextContent("minimum 5");
     });
 
-    it("shows minimum text in green when 20 or more words", () => {
+    it("shows minimum text in green when 5 or more words", () => {
       render(<TextInput {...defaultProps} />);
 
       const textarea = screen.getByLabelText("Experience");
-      const twentyWords = Array(20).fill("word").join(" ");
+      const fiveWords = Array(5).fill("word").join(" ");
 
-      fireEvent.change(textarea, { target: { value: twentyWords } });
+      fireEvent.change(textarea, { target: { value: fiveWords } });
 
       const description = screen.getByTestId("description");
       const minimumSpan = description.querySelector("span.text-green-600");
 
       expect(minimumSpan).toBeInTheDocument();
-      expect(minimumSpan).toHaveTextContent("minimum 20");
+      expect(minimumSpan).toHaveTextContent("minimum 5");
     });
 
     it("validates input and shows button state correctly", () => {
@@ -148,8 +148,8 @@ describe("TextInput Component", () => {
       fireEvent.change(textarea, { target: { value: tooManyWords } });
       expect(button).toBeDisabled();
 
-      // Enabled with valid word count
-      const validText = Array(25).fill("word").join(" ");
+      // Enabled with valid word count (5-50 words)
+      const validText = Array(10).fill("word").join(" ");
 
       fireEvent.change(textarea, { target: { value: validText } });
       expect(button).not.toBeDisabled();
@@ -203,7 +203,7 @@ describe("TextInput Component", () => {
       fireEvent.change(textarea, { target: { value: "Short text" } });
       expect(button).toBeDisabled(); // Still disabled due to word count
 
-      const validText = Array(25).fill("word").join(" ");
+      const validText = Array(10).fill("word").join(" ");
 
       fireEvent.change(textarea, { target: { value: validText } });
       expect(button).not.toBeDisabled();
@@ -217,7 +217,7 @@ describe("TextInput Component", () => {
       expect(button).toBeDisabled();
 
       const textarea = screen.getByLabelText("Experience");
-      const validText = Array(25).fill("word").join(" ");
+      const validText = Array(10).fill("word").join(" ");
 
       fireEvent.change(textarea, { target: { value: validText } });
       expect(button).toBeDisabled(); // Still disabled due to external prop

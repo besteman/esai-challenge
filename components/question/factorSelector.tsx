@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@heroui/button";
 import { Select, SelectItem } from "@heroui/select";
 import { Slider } from "@heroui/slider";
+
+import { ElevatedButton } from "../elevatedButton";
 
 interface FactorSelection {
   value: string;
@@ -24,13 +25,6 @@ interface FactorSelectorProps {
   };
   options: SelectionOption[];
   buttonText?: string;
-  buttonColor?:
-    | "default"
-    | "primary"
-    | "secondary"
-    | "success"
-    | "warning"
-    | "danger";
   onSubmit: (factors: {
     factor1: FactorSelection;
     factor2: FactorSelection;
@@ -44,7 +38,6 @@ export const FactorSelector = ({
   factors,
   options,
   buttonText = "Next",
-  buttonColor = "primary",
   onSubmit,
   disabled = false,
 }: FactorSelectorProps) => {
@@ -209,13 +202,9 @@ export const FactorSelector = ({
         </div>
       </div>
       <div className="flex justify-center">
-        <Button
-          color={buttonColor}
-          isDisabled={isSubmitDisabled}
-          onClick={handleSubmit}
-        >
+        <ElevatedButton disabled={isSubmitDisabled} onClick={handleSubmit}>
           {buttonText}
-        </Button>
+        </ElevatedButton>
       </div>
     </div>
   );
