@@ -19,8 +19,8 @@ export const EditableCard = ({
   if (!show) return null;
 
   return (
-    <Card className="cursor-pointer hover:shadow-md transition-shadow">
-      <CardBody className="p-4" onClick={onEdit}>
+    <Card className="hover:shadow-md transition-shadow">
+      <CardBody className="p-4">
         <div className="flex justify-between items-start">
           <div>
             <p className="font-semibold text-sm text-muted-foreground">
@@ -28,7 +28,7 @@ export const EditableCard = ({
             </p>
             <p className="text-lg">{value}</p>
           </div>
-          <Button color="primary" size="sm" variant="light">
+          <Button color="primary" size="sm" variant="light" onClick={onEdit}>
             Edit
           </Button>
         </div>
