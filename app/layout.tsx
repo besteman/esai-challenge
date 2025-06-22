@@ -49,7 +49,7 @@ export default function RootLayout({
               className="flex-1"
               style={{
                 backgroundImage: "url('/Green-plastic-background.png')",
-                backgroundSize: "100% 50%",
+                backgroundSize: "100% 400px",
                 backgroundPosition: "top",
                 backgroundRepeat: "no-repeat",
               }}
