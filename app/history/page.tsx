@@ -9,7 +9,8 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "@heroui/dropdown";
-import { Button } from "@heroui/button";
+
+import { ElevatedButton } from "@/components/elevatedButton";
 
 interface StarredItem {
   type: "school_match" | "major_mentor" | "story_strategist";
@@ -409,9 +410,9 @@ export default function History() {
               <div className="flex justify-center">
                 <Dropdown>
                   <DropdownTrigger>
-                    <Button className="capitalize" variant="shadow">
+                    <ElevatedButton className="relative capitalize">
                       {getSelectedOptionLabel()}
-                    </Button>
+                    </ElevatedButton>
                   </DropdownTrigger>
                   <DropdownMenu
                     aria-label="Select saved items type"
@@ -445,14 +446,12 @@ export default function History() {
             <div className="space-y-4">
               {sessionHistoryItems.length === 0 && !isLoadingSessionHistory ? (
                 <div className="text-center">
-                  <Button
+                  <ElevatedButton
                     className="mb-4"
-                    color="primary"
-                    variant="bordered"
                     onClick={fetchSessionHistory}
                   >
                     Load Session History
-                  </Button>
+                  </ElevatedButton>
                   <p className="text-gray-500">
                     Click to load your session history.
                   </p>
