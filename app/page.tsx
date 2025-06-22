@@ -10,24 +10,9 @@ export default function Home() {
         </h1>
       </div>
       <div className="flex flex-row gap-4 justify-center items-start flex-wrap">
-        <ProductCard
-          description="Lets see where the sorting hat puts you."
-          href="/school_match"
-          image="/Light-Bulb.png"
-          title="School Match Maker"
-        />
-        <ProductCard
-          description="What is your major? Lets find out together!"
-          href="/major_mentor"
-          image="/Neon-Books.png"
-          title="Major Mentor"
-        />
-        <ProductCard
-          description="What is your story?"
-          href="/story_strategist"
-          image="/Graduation-Cap.png"
-          title="Story Strategist"
-        />
+        <ProductCard href="/school_match" image="/Match-Maker.png" />
+        <ProductCard href="/major_mentor" image="/Major-Mentor.png" />
+        <ProductCard href="/story_strategist" image="Story-Strategist.png" />
       </div>
     </section>
   );
