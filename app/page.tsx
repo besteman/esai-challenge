@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
       <div className="flex justify-center items-center w-full">
-        <h1 className="whitespace-nowrap text-center mb-10 text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl">
+        <h1 className="text-center mb-10 text-lg sm:text-md md:text-2xl lg:text-3xl xl:text-4xl">
           {siteConfig.description}
         </h1>
       </div>
