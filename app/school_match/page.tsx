@@ -167,6 +167,7 @@ export default function SchoolMatchPage() {
         {currentStage === 1 && (
           <TextInput
             buttonText="Next"
+            disableWordCount={true}
             initialValue={userInputs.location}
             label="Location"
             placeholder="example: Florida"
