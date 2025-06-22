@@ -176,3 +176,20 @@ export interface SessionHistoryResponse extends BaseSuccessResponse {
   data: SessionHistoryItem[];
   count: number;
 }
+
+// Re-export database types for convenience
+export type {
+  NeonConnection,
+  QueryParams,
+  QueryResult,
+  TransactionQuery,
+  DatabaseError,
+  DatabaseRow,
+  BaseRecord,
+  DatabaseOperationResult,
+  QueryOptions,
+  TransactionOptions,
+  ConnectionStatus,
+  DatabaseOperation,
+  HealthCheck,
+} from "./database";

@@ -1,9 +1,18 @@
+import type {
+  NeonConnection,
+  QueryParams,
+  QueryResult,
+  TransactionQuery,
+  DatabaseError,
+  DatabaseRow,
+} from "@/types/database";
+
 import { neon } from "@neondatabase/serverless";
 
 // Database connection utility for NeonDB
 export class NeonDBConnection {
   private static instance: NeonDBConnection;
-  private connection: ReturnType<typeof neon>;
+  private connection: NeonConnection;
 
   private constructor() {
     if (!process.env.DATABASE_URL) {
@@ -23,60 +32,68 @@ export class NeonDBConnection {
   }
 
   // Get the database connection
-  public getConnection() {
+  public getConnection(): NeonConnection {
     return this.connection;
   }
 
   // Execute a query with the correct NeonDB serverless API
-  public async query(sql: string, params: any[] = []) {
+  public async query<T extends DatabaseRow = DatabaseRow>(
+    sql: string,
+    params: QueryParams = [],
+  ): Promise<QueryResult<T>> {
     try {
       // Always use the .query() method for consistency
       // This handles both parameterized and non-parameterized queries
       const result = await this.connection.query(sql, params);
 
-      return result;
+      return result as QueryResult<T>;
     } catch (error) {
-      throw error;
+      throw error as DatabaseError;
     }
   }
 
   // Execute multiple queries in sequence
-  public async transaction(queries: Array<{ sql: string; params?: any[] }>) {
+  public async transaction<T extends DatabaseRow = DatabaseRow>(
+    queries: TransactionQuery[],
+  ): Promise<QueryResult<T>[]> {
     try {
-      const results = [];
+      const results: QueryResult<T>[] = [];
 
       for (const { sql, params = [] } of queries) {
-        const result = await this.query(sql, params);
+        const result = await this.query<T>(sql, params);
 
         results.push(result);
       }
 
       return results;
     } catch (error) {
-      throw error;
+      throw error as DatabaseError;
     }
   }
 }
 
 // Helper function to get database connection
-export const getNeonDB = () => {
+export const getNeonDB = (): NeonConnection => {
   return NeonDBConnection.getInstance().getConnection();
 };
 
 // Helper function to execute queries
-export const executeQuery = async (sql: string, params: any[] = []) => {
+export const executeQuery = async <T extends DatabaseRow = DatabaseRow>(
+  sql: string,
+  params: QueryParams = [],
+): Promise<QueryResult<T>> => {
   const db = NeonDBConnection.getInstance();
 
-  return await db.query(sql, params);
+  return await db.query<T>(sql, params);
 };
 
 // Helper function to execute transactions
-export const executeTransaction = async (
-  queries: Array<{ sql: string; params?: any[] }>,
-) => {
+export const executeTransaction = async <T extends DatabaseRow = DatabaseRow>(
+  queries: TransactionQuery[],
+): Promise<QueryResult<T>[]> => {
   const db = NeonDBConnection.getInstance();
 
-  return await db.transaction(queries);
+  return await db.transaction<T>(queries);
 };
 
 // Export the connection instance for direct access if needed
