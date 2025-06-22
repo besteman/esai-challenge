@@ -7,6 +7,7 @@ import { ProductWelcome } from "@/components/productWelcome";
 import { PromptReq } from "@/components/stream/promptReq";
 import { TextInput } from "@/components/question/textInput";
 import { EditableCard } from "@/components/summary/editableCard";
+import { storyStrategistPrompt } from "@/lib/prompts";
 
 interface SummaryOption {
   title: string;
@@ -295,28 +296,7 @@ export default function StoryStrategistPage() {
                 buttonText="Create my stories!"
                 loadingSubtext="Finding your perfect stories..."
                 loadingText="Loading..."
-                systemPrompt={
-                  "You are a college admission advisor who is helping a student craft their story for college application narrtive" +
-                  "You will receive the student's inputs in JSON of When do you feel most like yourself?, Tell us about a hardship or challenge, What's something you never get bored of?, Tell us about your family, What are you most proud of achieving?, and How do you want to be known in 10 years?" +
-                  "You will give 3 possible suggested angles for how they can stand out and get accepted to college" +
-                  "You will return the response in a JSON format of the following structure: " +
-                  JSON.stringify([
-                    {
-                      option1: {
-                        title: "Curiosity-Driven Leader",
-                        summary:
-                          "Connect your love for asking questions with your accomplishments in drama and sports. This unique intersection can create an engaging hook for your essays, illustrating how curiosity fuels your passion for leadership and innovation. Highlighting this relationship can draw readers in and set a strong foundation for your application!",
-                      },
-                    },
-                    {
-                      option2: {
-                        title: "Empathetic Innovator",
-                        summary:
-                          "Use your values of helping others with your experience navigating ADHD to showcase resilience and empathy in your personal statement. This connection emphasizes your desire to lead and innovate, giving admission advisors a compelling narrative about your growth. It's a standout story that shows personal challenges fueling a passion for making a difference!",
-                      },
-                    },
-                  ])
-                }
+                systemPrompt={storyStrategistPrompt.complete}
                 userPrompt={`Given the following user inputs: ${JSON.stringify(userInputs)}`}
                 onResponse={async (response) => {
                   setGeneration(response);

@@ -9,6 +9,7 @@ import { TextInput } from "@/components/question/textInput";
 import { FactorSelector } from "@/components/question/factorSelector";
 import { EditableCard } from "@/components/summary/editableCard";
 import { FactorsCard } from "@/components/summary/factorsCard";
+import { majorMentorPrompt } from "@/lib/prompts";
 import { MajorOption } from "@/types";
 
 interface UserInputs {
@@ -225,30 +226,7 @@ export default function MajorMentorPage() {
                 buttonText="Find Me A Major!"
                 loadingSubtext="Finding your perfect major match..."
                 loadingText="Loading..."
-                systemPrompt={
-                  "You are a college admission advisor who is helping a student chosing their possible major in college" +
-                  "You will receive the student's inputs in JSON of their favorite subject, 3 things that are important with their importance ratings, and post-college plans." +
-                  "You will give 3 possible majors that fit the student's inputs, and a brief summary of each major and why it is a good fit." +
-                  "You will return the response in a JSON format of the following structure: " +
-                  JSON.stringify([
-                    {
-                      option1: {
-                        majorTitle: "Financial Planning",
-                        descriptionOfMajor: "This is what the job is",
-                        whyThisMajor:
-                          "With your interest in helping others with finances and a high importance placed on job security, a major in finance or financial planning can lead to stable, rewarding careers such as financial advisor, planner, or analyst.",
-                      },
-                    },
-                    {
-                      option2: {
-                        majorTitle: "Financial Planning",
-                        descriptionOfMajor: "This is what the job is",
-                        whyThisMajor:
-                          "With your interest in helping others with finances and a high importance placed on job security, a major in finance or financial planning can lead to stable, rewarding careers such as financial advisor, planner, or analyst.",
-                      },
-                    },
-                  ])
-                }
+                systemPrompt={majorMentorPrompt.complete}
                 userPrompt={`Given the following user inputs: ${JSON.stringify(userInputs)}`}
                 onResponse={async (response) => {
                   setGeneration(response);

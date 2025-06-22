@@ -7,6 +7,7 @@ import { ProductWelcome } from "@/components/productWelcome";
 import { PromptReq } from "@/components/stream/promptReq";
 import { TextInput } from "@/components/question/textInput";
 import { EditableCard } from "@/components/summary/editableCard";
+import { schoolMatchPrompt } from "@/lib/prompts";
 import { SchoolMatchOption } from "@/types";
 
 interface UserInputs {
@@ -244,32 +245,7 @@ export default function SchoolMatchPage() {
                 buttonText="Find Me A College!"
                 loadingSubtext="Finding your perfect college match..."
                 loadingText="Loading..."
-                systemPrompt={
-                  "You are a college admission advisor who is helping a student chosing their college" +
-                  "You will receive the student's inputs in JSON of their current location, location requirements, post-college plans, Ideal Campus Experience, and unweighted GPA." +
-                  "You will give 3 colleges that fit the student's inputs, and a brief summary of college and why it is a good fit." +
-                  "You will return the response in a JSON format of the following structure: " +
-                  JSON.stringify([
-                    {
-                      option1: {
-                        collegeName: "UCF",
-                        descriptionOfCollege:
-                          "UCF is a large public university in Orlando, Florida.",
-                        whyThisCollege:
-                          "UCF is a great fit for you because it offers a wide range of majors and has a vibrant campus life, which aligns with your interest in a larger community and your future plans in business.",
-                      },
-                    },
-                    {
-                      option2: {
-                        collegeName: "USF",
-                        descriptionOfCollege:
-                          "USF is a public research university in Tampa, Florida.",
-                        whyThisCollege:
-                          "USF is a great fit for you because it has a strong business program and is located in a city with a growing job market, which aligns with your future plans.",
-                      },
-                    },
-                  ])
-                }
+                systemPrompt={schoolMatchPrompt.complete}
                 userPrompt={`Given the following user inputs: ${JSON.stringify(userInputs)}`}
                 onResponse={async (response) => {
                   setGeneration(response);
