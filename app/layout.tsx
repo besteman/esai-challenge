@@ -45,7 +45,7 @@ export default function RootLayout({
           fontAnonymous.variable,
         )}
       >
-        <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
+        <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div className="relative flex flex-col min-h-screen">
             <div
               className="flex-1"
