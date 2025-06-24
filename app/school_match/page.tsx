@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardBody, CardHeader } from "@heroui/card";
 
 import { ProductWelcome } from "@/components/productWelcome";
 import { PromptReq } from "@/components/stream/promptReq";
 import { TextInput } from "@/components/question/textInput";
 import { EditableCard } from "@/components/summary/editableCard";
+import { SchoolMatchRecommendationList } from "@/components/summary/schoolMatchRecommendationList";
+import { RefineOutputPrompt } from "@/components/refineOutputPrompt";
 import { schoolMatchPrompt } from "@/lib/prompts";
-import { SchoolMatchOption } from "@/types";
 
 interface UserInputs {
   location: string;
@@ -16,6 +16,7 @@ interface UserInputs {
   futurePlans: string;
   idealCampusExperience: string;
   unweightedGPA: string;
+  refinement?: string;
 }
 
 export default function SchoolMatchPage() {
@@ -26,8 +27,10 @@ export default function SchoolMatchPage() {
     futurePlans: "",
     idealCampusExperience: "",
     unweightedGPA: "",
+    refinement: "",
   });
   const [generation, setGeneration] = useState("");
+  const [isRefining, setIsRefining] = useState(false);
   const [starredStates, setStarredStates] = useState<{
     [key: number]: boolean;
   }>({});
@@ -243,13 +246,26 @@ export default function SchoolMatchPage() {
             </h3>
             {!generation && (
               <PromptReq
-                buttonText="Find Me A College!"
-                loadingSubtext="Finding your perfect college match..."
+                buttonText={
+                  isRefining ? "Click with refinement" : "Find Me A College!"
+                }
+                loadingSubtext={
+                  isRefining
+                    ? "Refining your college recommendations..."
+                    : "Finding your perfect college match..."
+                }
                 loadingText="Loading..."
                 systemPrompt={schoolMatchPrompt.complete}
-                userPrompt={`Given the following user inputs: ${JSON.stringify(userInputs)}`}
+                userPrompt={
+                  isRefining
+                    ? `Given the following user inputs: ${JSON.stringify(userInputs)}
+
+                       Please refine the previous college recommendations based on this additional request: "${userInputs.refinement}"`
+                    : `Given the following user inputs: ${JSON.stringify(userInputs)}`
+                }
                 onResponse={async (response) => {
                   setGeneration(response);
+                  setIsRefining(false);
                   await saveSchoolRecommendation(response);
                 }}
               />
@@ -259,78 +275,30 @@ export default function SchoolMatchPage() {
                 <h4 className="text-lg font-semibold text-center mb-4">
                   Your Recommended College Recommendations:
                 </h4>
-                <div className="space-y-4">
-                  {(() => {
-                    try {
-                      const parsedGeneration = JSON.parse(generation);
-
-                      return parsedGeneration.map(
-                        (item: any, index: number) => {
-                          const optionKey = Object.keys(item)[0];
-                          const option: SchoolMatchOption = item[optionKey];
-
-                          return (
-                            <Card key={index} className="w-full relative">
-                              <CardHeader className="pb-0 pt-4 px-4 flex-col items-start">
-                                <div className="flex justify-between items-start w-full">
-                                  <h4 className="font-bold text-large text-primary">
-                                    {option.collegeName}
-                                  </h4>
-                                  <button
-                                    className="text-2xl hover:scale-110 transition-transform"
-                                    type="button"
-                                    onClick={() => toggleStarred(index)}
-                                  >
-                                    {starredStates[index] ? "⭐" : "☆"}
-                                  </button>
-                                </div>
-                              </CardHeader>
-                              <CardBody className="overflow-visible py-2 px-4">
-                                <div className="space-y-3">
-                                  <div>
-                                    <h5 className="font-semibold text-sm text-muted-foreground mb-1">
-                                      Description of College
-                                    </h5>
-                                    <p className="text-sm">
-                                      {option.descriptionOfCollege}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <h5 className="font-semibold text-sm text-muted-foreground mb-1">
-                                      Why This College:
-                                    </h5>
-                                    <p className="text-sm">
-                                      {option.whyThisCollege}
-                                    </p>
-                                  </div>
-                                </div>
-                              </CardBody>
-                            </Card>
-                          );
-                        },
-                      );
-                    } catch {
-                      return (
-                        <div className="space-y-4">
-                          <div className="text-center">
-                            <h4 className="text-lg font-semibold text-red-600 mb-2">
-                              Error parsing response
-                            </h4>
-                            <p className="text-sm text-muted-foreground mb-4">
-                              The response couldn&apos;t be parsed as expected.
-                              Here&apos;s the raw response:
-                            </p>
-                          </div>
-                          <div className="text-left bg-black text-white p-6 rounded-lg">
-                            <div className="whitespace-pre-wrap">
-                              {generation}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    }
-                  })()}
+                <div className="bg-gray-50 p-6 rounded-lg">
+                  <SchoolMatchRecommendationList
+                    generation={generation}
+                    starredStates={starredStates}
+                    onToggleStarred={toggleStarred}
+                  />
                 </div>
+                <RefineOutputPrompt
+                  buttonOptions={[
+                    "Find campus with good sports teams",
+                    "Find colleges with strong computer science programs",
+                    "Find colleges with good public transportation",
+                  ]}
+                  onRefine={async (refinementText) => {
+                    setIsRefining(true);
+                    setUserInputs({
+                      ...userInputs,
+                      refinement: refinementText,
+                    });
+
+                    // Clear current generation to show loading state
+                    setGeneration("");
+                  }}
+                />
               </div>
             )}
           </div>

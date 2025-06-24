@@ -1,18 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardBody, CardHeader } from "@heroui/card";
 
 import { ProductWelcome } from "@/components/productWelcome";
 import { PromptReq } from "@/components/stream/promptReq";
+import { RefineOutputPrompt } from "@/components/refineOutputPrompt";
 import { TextInput } from "@/components/question/textInput";
 import { EditableCard } from "@/components/summary/editableCard";
+import { StoryStrategistRecommendationList } from "@/components/summary/storyStrategistRecommendationList";
 import { storyStrategistPrompt } from "@/lib/prompts";
-
-interface SummaryOption {
-  title: string;
-  summary: string;
-}
 
 interface UserInputs {
   feelMostLikeYourself: string;
@@ -23,6 +19,7 @@ interface UserInputs {
   knownIn10Years: string;
   whatSetsYouApart: string;
   postCollegePlans?: string;
+  refinement?: string;
 }
 
 export default function StoryStrategistPage() {
@@ -36,8 +33,10 @@ export default function StoryStrategistPage() {
     knownIn10Years: "",
     whatSetsYouApart: "",
     postCollegePlans: "",
+    refinement: "",
   });
   const [generation, setGeneration] = useState("");
+  const [isRefining, setIsRefining] = useState(false);
   const [starredStates, setStarredStates] = useState<{
     [key: number]: boolean;
   }>({});
@@ -293,13 +292,26 @@ export default function StoryStrategistPage() {
             </h3>
             {!generation && (
               <PromptReq
-                buttonText="Create my stories!"
-                loadingSubtext="Finding your perfect stories..."
+                buttonText={
+                  isRefining ? "Click with refinement" : "Create my stories!"
+                }
+                loadingSubtext={
+                  isRefining
+                    ? "Refining your story recommendations..."
+                    : "Finding your perfect stories..."
+                }
                 loadingText="Loading..."
                 systemPrompt={storyStrategistPrompt.complete}
-                userPrompt={`Given the following user inputs: ${JSON.stringify(userInputs)}`}
+                userPrompt={
+                  isRefining
+                    ? `Given the following user inputs: ${JSON.stringify(userInputs)}
+
+                       Please refine the previous story recommendations based on this additional request: "${userInputs.refinement}"`
+                    : `Given the following user inputs: ${JSON.stringify(userInputs)}`
+                }
                 onResponse={async (response) => {
                   setGeneration(response);
+                  setIsRefining(false);
                   await saveStoryRecommendation(response);
                 }}
               />
@@ -307,67 +319,32 @@ export default function StoryStrategistPage() {
             {generation && (
               <div className="space-y-4">
                 <h4 className="text-lg font-semibold text-center mb-4">
-                  Your Recommended Story Angles:
+                  Your Story Recommendations:
                 </h4>
-                <div className="space-y-4">
-                  {(() => {
-                    try {
-                      const parsedGeneration = JSON.parse(generation);
-
-                      return parsedGeneration.map(
-                        (item: any, index: number) => {
-                          const optionKey = Object.keys(item)[0];
-                          const option: SummaryOption = item[optionKey];
-
-                          return (
-                            <Card key={index} className="w-full">
-                              <CardHeader className="pb-0 pt-4 px-4 flex-col items-start">
-                                <div className="flex justify-between items-start w-full">
-                                  <h4 className="font-bold text-large text-primary">
-                                    {option.title}
-                                  </h4>
-                                  <button
-                                    className="text-2xl hover:scale-110 transition-transform"
-                                    type="button"
-                                    onClick={() => toggleStarred(index)}
-                                  >
-                                    {starredStates[index] ? "⭐" : "☆"}
-                                  </button>
-                                </div>
-                              </CardHeader>
-                              <CardBody className="overflow-visible py-2 px-4">
-                                <div className="space-y-3">
-                                  <div>
-                                    <p className="text-sm">{option.summary}</p>
-                                  </div>
-                                </div>
-                              </CardBody>
-                            </Card>
-                          );
-                        },
-                      );
-                    } catch {
-                      return (
-                        <div className="space-y-4">
-                          <div className="text-center">
-                            <h4 className="text-lg font-semibold text-red-600 mb-2">
-                              Error parsing response
-                            </h4>
-                            <p className="text-sm text-muted-foreground mb-4">
-                              The response couldn&apos;t be parsed as expected.
-                              Here&apos;s the raw response:
-                            </p>
-                          </div>
-                          <div className="text-left bg-black text-white p-6 rounded-lg">
-                            <div className="whitespace-pre-wrap">
-                              {generation}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    }
-                  })()}
+                <div className="bg-gray-50 p-6 rounded-lg">
+                  <StoryStrategistRecommendationList
+                    generation={generation}
+                    starredStates={starredStates}
+                    onToggleStarred={toggleStarred}
+                  />
                 </div>
+                <RefineOutputPrompt
+                  buttonOptions={[
+                    "Add more specific examples and anecdotes",
+                    "Focus on leadership and initiative themes",
+                    "Emphasize personal growth and resilience",
+                  ]}
+                  onRefine={async (refinementText: string) => {
+                    setIsRefining(true);
+                    setUserInputs({
+                      ...userInputs,
+                      refinement: refinementText,
+                    });
+
+                    // Clear current generation to show loading state
+                    setGeneration("");
+                  }}
+                />
               </div>
             )}
           </div>
