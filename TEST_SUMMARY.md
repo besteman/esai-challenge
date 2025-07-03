@@ -3,29 +3,33 @@
 ## Overview
 This document provides a comprehensive summary of all test suites implemented for the college application assistant application, including both frontend flows and API routes.
 
+## Test Organization Update
+
+As of the latest update, all tests have been migrated to a centralized `__test__` directory at the root level of the project. The test directory structure mirrors the main application structure, making it easier to locate and maintain tests. For detailed information about the test structure, see [docs/test_organization.md](./docs/test_organization.md).
+
 ## Test Suite Coverage Summary
 
 | Component | Test Count | Statement Coverage | Branch Coverage | Function Coverage | Notes |
 |-----------|------------|-------------------|-----------------|-------------------|-------|
 | **Homepage** | 1 test | 100% | 100% | 100% | Landing page navigation |
-| **Major Mentor** | 6 tests | 91.66% | 79.16% | 88.88% | Academic major recommendations |
-| **School Match** | 6 tests | 93.33% | 89.28% | 81.81% | College matching system |
-| **Story Strategist** | 7 tests | 91.35% | 90.62% | 76.92% | Personal narrative development |
-| **History** | 9 tests | 98.33% | 89.83% | 100% | Data viewing and management |
+| **Major Mentor** | 6 tests | 86.2% | 69.44% | 77.77% | Academic major recommendations |
+| **School Match** | 6 tests | 87.77% | 77.5% | 72.72% | College matching system |
+| **Story Strategist** | 7 tests | 86.45% | 79.54% | 69.23% | Personal narrative development |
+| **History** | 9 tests | 96.26% | 86.56% | 100% | Data viewing and management |
 | **Text Input Component** | 14 tests | 95.91% | 92.85% | 100% | Form input component |
 | **Database Utility** | 33 tests | 100% | 100% | 100% | NeonDB connection management |
 | **Database Types** | 18 tests | N/A | N/A | N/A | TypeScript type validation |
 | **Prompts Module** | 44 tests | 100% | 100% | 100% | AI prompt configurations |
-| **API Routes** | 134 tests | 100% | 91.37% | 100% | 9 API endpoint test suites |
-| **TOTAL** | **272 tests** | **96.54%** | **91.37%** | **89.56%** | **Complete coverage** |
+| **API Routes** | 134 tests | 99% | 91.37% | 100% | 9 API endpoint test suites |
+| **TOTAL** | **276 tests** | **92.29%** | **82.68%** | **80.85%** | **Complete coverage** |
 
 ## Comprehensive Test Results ✅
 
 ```
 Test Suites: 18 passed, 18 total
-Tests:       272 passed, 272 total
+Tests:       276 passed, 276 total
 Snapshots:   0 total
-Time:        6.133s
+Time:        6.398s
 ```
 
 ## Individual Flow Details

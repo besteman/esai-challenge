@@ -26,7 +26,7 @@ ESAI Awesomeness is a modern, full-stack college application assistant that leve
 - **Real-time Processing**: Streaming AI responses
 - **Database Persistence**: NeonDB for scalable data storage
 - **Full API Coverage**: RESTful endpoints for all operations
-- **Comprehensive Testing**: 198 tests with 95%+ coverage
+- **Comprehensive Testing**: 552 tests with 92%+ coverage
 
 ## 🚀 Getting Started
 
@@ -139,7 +139,6 @@ ESAI Awesomeness is a modern, full-stack college application assistant that leve
 ### Project Structure
 ```
 ├── app/                             # Next.js App Router directory
-│   ├── __tests__/                   # App-level test files
 │   ├── api/                         # API routes
 │   │   ├── completion/              # AI completion endpoint
 │   │   └── db/                      # Database operations
@@ -159,6 +158,20 @@ ESAI Awesomeness is a modern, full-stack college application assistant that leve
 │   ├── layout.tsx                   # Root layout component
 │   ├── page.tsx                     # Homepage
 │   └── providers.tsx                # App providers (theme, etc.)
+├── __test__/                        # Centralized test directory
+│   ├── app/                         # Tests for app/ routes and pages
+│   │   ├── api/                     # Tests for API routes
+│   │   │   ├── completion/          # Tests for completion API
+│   │   │   └── db/                  # Tests for database API routes
+│   │   ├── history/                 # Tests for history page
+│   │   ├── major_mentor/            # Tests for major_mentor page
+│   │   ├── school_match/            # Tests for school_match page
+│   │   ├── story_strategist/        # Tests for story_strategist page
+│   │   └── page.test.tsx            # Tests for the main page
+│   ├── components/                  # Tests for components
+│   │   └── question/                # Tests for question components
+│   ├── lib/                         # Tests for lib utilities
+│   └── types/                       # Tests for TypeScript types
 ├── components/                      # Reusable UI components
 │   ├── question/                    # Form input components
 │   │   └── textInput.tsx            # Multi-stage text input
@@ -176,8 +189,9 @@ ESAI Awesomeness is a modern, full-stack college application assistant that leve
 ├── config/                          # Configuration files
 │   ├── fonts.ts                     # Font configurations
 │   └── site.ts                      # Site metadata and config
+├── docs/                            # Project documentation
+│   └── test_organization.md         # Test structure documentation
 ├── lib/                             # Utility libraries
-│   ├── __tests__/                   # Library test files
 │   ├── prompts/                     # AI prompt templates
 │   ├── db.ts                        # Database connection and utilities
 │   └── prompts.ts                   # AI prompt configurations
@@ -188,7 +202,6 @@ ESAI Awesomeness is a modern, full-stack college application assistant that leve
 ├── styles/                          # Global styles
 │   └── globals.css                  # Global CSS and Tailwind imports
 ├── types/                           # TypeScript type definitions
-│   ├── __tests__/                   # Type definition tests
 │   ├── database.ts                  # Database-related types
 │   ├── index.ts                     # Common type exports
 │   └── prompts.ts                   # AI prompt types
