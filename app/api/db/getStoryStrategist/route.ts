@@ -13,10 +13,18 @@ export async function GET(
   try {
     const { searchParams } = new URL(request.url);
     const starred = searchParams.get("starred");
+    const userId = searchParams.get("userId");
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "userId parameter is required", success: false, details: "" },
+        { status: 400 },
+      );
+    }
 
     // Build the base query
-    let query = "SELECT * FROM story_strategist";
-    const params: any[] = [];
+    let query = "SELECT * FROM story_strategist WHERE user_id = $1";
+    const params: any[] = [userId];
 
     // Add WHERE condition for starred filter if provided
     if (starred !== null && starred !== undefined) {

@@ -8,12 +8,15 @@ import { StoryOption, StoryStrategistRequest } from "@/types";
 export async function POST(request: NextRequest) {
   try {
     const body: StoryStrategistRequest = await request.json();
-    const { userInputs, generationResponse, starredStates = {} } = body;
+    const { userId, userInputs, generationResponse, starredStates = {} } = body;
 
     // Validate required fields
-    if (!userInputs || !generationResponse) {
+    if (!userId || !userInputs || !generationResponse) {
       return NextResponse.json(
-        { error: "Missing required fields: userInputs and generationResponse" },
+        {
+          error:
+            "Missing required fields: userId, userInputs and generationResponse",
+        },
         { status: 400 },
       );
     }
@@ -35,18 +38,20 @@ export async function POST(request: NextRequest) {
     // Generate a UUID for this output group (all recommendations from this generation)
     const outputGroupId = randomUUID();
 
-    // First, delete any existing records for this user session (based on user inputs)
+    // First, delete any existing records for this user and session (based on user inputs)
     // This ensures we don't have duplicates when users toggle stars multiple times
     await executeQuery(
       `DELETE FROM story_strategist
-       WHERE feelMostLikeYourself = $1
-       AND hardship = $2
-       AND never_get_bored = $3
-       AND family_background = $4
-       AND proud_achievement = $5
-       AND known_in_10_years = $6
-       AND what_sets_you_apart = $7`,
+       WHERE user_id = $1
+       AND feelMostLikeYourself = $2
+       AND hardship = $3
+       AND never_get_bored = $4
+       AND family_background = $5
+       AND proud_achievement = $6
+       AND known_in_10_years = $7
+       AND what_sets_you_apart = $8`,
       [
+        userId,
         userInputs.feelMostLikeYourself,
         userInputs.hardship,
         userInputs.neverGetBored,
@@ -68,8 +73,8 @@ export async function POST(request: NextRequest) {
         `INSERT INTO story_strategist
          (output_group, feelMostLikeYourself, hardship, never_get_bored,
           family_background, proud_achievement, known_in_10_years,
-          what_sets_you_apart, post_college_plans, title, summary, starred, created_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW())
+          what_sets_you_apart, post_college_plans, title, summary, starred, user_id, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW())
          RETURNING id`,
         [
           outputGroupId,
@@ -84,6 +89,7 @@ export async function POST(request: NextRequest) {
           option.title,
           option.summary,
           isStarred,
+          userId,
         ],
       );
 

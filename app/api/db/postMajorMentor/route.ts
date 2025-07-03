@@ -8,12 +8,15 @@ import { MajorMentorRequest, MajorOption } from "@/types";
 export async function POST(request: NextRequest) {
   try {
     const body: MajorMentorRequest = await request.json();
-    const { userInputs, generationResponse, starredStates = {} } = body;
+    const { userId, userInputs, generationResponse, starredStates = {} } = body;
 
     // Validate required fields
-    if (!userInputs || !generationResponse) {
+    if (!userId || !userInputs || !generationResponse) {
       return NextResponse.json(
-        { error: "Missing required fields: userInputs and generationResponse" },
+        {
+          error:
+            "Missing required fields: userId, userInputs and generationResponse",
+        },
         { status: 400 },
       );
     }
@@ -35,15 +38,17 @@ export async function POST(request: NextRequest) {
     // Generate a UUID for this output group (all recommendations from this generation)
     const outputGroupId = randomUUID();
 
-    // First, delete any existing records for this user session (based on user inputs)
+    // First, delete any existing records for this user and session (based on user inputs)
     // This ensures we don't have duplicates when users toggle stars multiple times
     await executeQuery(
       `DELETE FROM major_mentor
-       WHERE favorite_subject = $1
-       AND factor_one = $2
-       AND factor_two = $3
-       AND factor_three = $4`,
+       WHERE user_id = $1
+       AND favorite_subject = $2
+       AND factor_one = $3
+       AND factor_two = $4
+       AND factor_three = $5`,
       [
+        userId,
         userInputs.favoriteSubject,
         userInputs.factors.factor1.value,
         userInputs.factors.factor2.value,
@@ -62,8 +67,8 @@ export async function POST(request: NextRequest) {
         `INSERT INTO major_mentor
          (output_group, favorite_subject, factor_one, factor_two, factor_three,
           factor_one_importance, factor_two_importance, factor_three_importance,
-          major_title, description_of_major, why_this_major, starred, created_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW())
+          major_title, description_of_major, why_this_major, starred, user_id, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW())
          RETURNING id`,
         [
           outputGroupId,
@@ -78,6 +83,7 @@ export async function POST(request: NextRequest) {
           option.descriptionOfMajor,
           option.whyThisMajor,
           isStarred,
+          userId,
         ],
       );
 

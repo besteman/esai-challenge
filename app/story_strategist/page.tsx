@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 import { ProductWelcome } from "@/components/productWelcome";
 import { PromptReq } from "@/components/stream/promptReq";
@@ -9,6 +10,7 @@ import { TextInput } from "@/components/question/textInput";
 import { EditableCard } from "@/components/summary/editableCard";
 import { StoryStrategistRecommendationList } from "@/components/summary/storyStrategistRecommendationList";
 import { storyStrategistPrompt } from "@/lib/prompts";
+import { useAuthenticatedUser } from "@/lib/auth";
 
 interface UserInputs {
   feelMostLikeYourself: string;
@@ -23,6 +25,9 @@ interface UserInputs {
 }
 
 export default function StoryStrategistPage() {
+  const router = useRouter();
+  const { userId, isAuthenticated, isLoading } = useAuthenticatedUser();
+
   const [currentStage, setCurrentStage] = useState(1);
   const [userInputs, setUserInputs] = useState<UserInputs>({
     feelMostLikeYourself: "",
@@ -40,6 +45,30 @@ export default function StoryStrategistPage() {
   const [starredStates, setStarredStates] = useState<{
     [key: number]: boolean;
   }>({});
+
+  // Redirect to sign-in if not authenticated
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push("/sign-in");
+    }
+  }, [isLoading, isAuthenticated, router]);
+
+  // Show loading while checking authentication
+  if (isLoading) {
+    return (
+      <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto" />
+          <p className="mt-2 text-default-600">Loading...</p>
+        </div>
+      </section>
+    );
+  }
+
+  // Don't render anything if not authenticated (will redirect)
+  if (!isAuthenticated) {
+    return null;
+  }
 
   // Function to toggle starred state for a story recommendation
   const toggleStarred = async (index: number) => {
@@ -60,6 +89,7 @@ export default function StoryStrategistPage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
+            userId,
             userInputs,
             generationResponse: generation,
             starredStates: newStarredStates,
@@ -96,6 +126,7 @@ export default function StoryStrategistPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          userId,
           userInputs,
           generationResponse,
           starredStates,

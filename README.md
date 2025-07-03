@@ -26,7 +26,7 @@ ESAI Awesomeness is a modern, full-stack college application assistant that leve
 - **Real-time Processing**: Streaming AI responses
 - **Database Persistence**: NeonDB for scalable data storage
 - **Full API Coverage**: RESTful endpoints for all operations
-- **Comprehensive Testing**: 198 tests with 95%+ coverage
+- **Comprehensive Testing**: 552 tests with 92%+ coverage
 
 ## 🚀 Getting Started
 
@@ -57,62 +57,7 @@ ESAI Awesomeness is a modern, full-stack college application assistant that leve
   Create a `env.local` file and set a DATABASE_URL and OPENAI_API_KEY
 
 4. **Database Setup**
-   - Create tables for: `major_mentor`, `school_match`, `story_strategist`, `session_history`
-   - Each table should include fields for user inputs, AI outputs, and metadata
-   ```sql
-    DROP TABLE IF EXISTS school_match_maker;
-    DROP TABLE IF EXISTS major_mentor;
-    DROP TABLE IF EXISTS story_strategist;
-
-    CREATE TABLE IF NOT EXISTS school_match_maker(
-      id SERIAL PRIMARY KEY,
-      output_group UUID NOT NULL,
-      location TEXT NOT NULL,
-      location_requirements TEXT NOT NULL,
-      future_plans TEXT NOT NULL,
-      ideal_campus_experience TEXT NOT NULL,
-      unweighted_gpa TEXT NOT NULL,
-      college_name TEXT NOT NULL,
-      description_of_college TEXT NOT NULL,
-      why_this_college TEXT NOT NULL,
-      starred BOOLEAN DEFAULT FALSE,
-      created_at TIMESTAMP
-    );
-
-    CREATE TABLE IF NOT EXISTS major_mentor(
-      id SERIAL PRIMARY KEY,
-      output_group UUID NOT NULL,
-      favorite_subject TEXT NOT NULL,
-      factor_one TEXT NOT NULL,
-      factor_two TEXT NOT NULL,
-      factor_three TEXT NOT NULL,
-      factor_one_importance INT NOT NULL,
-      factor_two_importance INT NOT NULL,
-      factor_three_importance INT NOT NULL,
-      major_title TEXT NOT NULL,
-      description_of_major TEXT NOT NULL,
-      why_this_major TEXT NOT NULL,
-      starred BOOLEAN DEFAULT FALSE,
-      created_at TIMESTAMP
-    );
-
-    CREATE TABLE IF NOT EXISTS story_strategist(
-      id SERIAL PRIMARY KEY,
-      output_group UUID NOT NULL,
-      feelMostLikeYourself TEXT NOT NULL,
-      hardship TEXT NOT NULL,
-      never_get_bored TEXT NOT NULL,
-      family_background TEXT NOT NULL,
-      proud_achievement TEXT NOT NULL,
-      known_in_10_years TEXT NOT NULL,
-      what_sets_you_apart TEXT NOT NULL,
-      post_college_plans TEXT NOT NULL,
-      title TEXT NOT NULL,
-      summary TEXT NOT NULL,
-      starred BOOLEAN DEFAULT FALSE,
-      created_at TIMESTAMP
-    );
-   ```
+   - Create tables and SQL schema is found is [here](schema.sql)
 
 5. **Start the development server**
    ```bash
@@ -139,7 +84,6 @@ ESAI Awesomeness is a modern, full-stack college application assistant that leve
 ### Project Structure
 ```
 ├── app/                             # Next.js App Router directory
-│   ├── __tests__/                   # App-level test files
 │   ├── api/                         # API routes
 │   │   ├── completion/              # AI completion endpoint
 │   │   └── db/                      # Database operations
@@ -159,6 +103,20 @@ ESAI Awesomeness is a modern, full-stack college application assistant that leve
 │   ├── layout.tsx                   # Root layout component
 │   ├── page.tsx                     # Homepage
 │   └── providers.tsx                # App providers (theme, etc.)
+├── __test__/                        # Centralized test directory
+│   ├── app/                         # Tests for app/ routes and pages
+│   │   ├── api/                     # Tests for API routes
+│   │   │   ├── completion/          # Tests for completion API
+│   │   │   └── db/                  # Tests for database API routes
+│   │   ├── history/                 # Tests for history page
+│   │   ├── major_mentor/            # Tests for major_mentor page
+│   │   ├── school_match/            # Tests for school_match page
+│   │   ├── story_strategist/        # Tests for story_strategist page
+│   │   └── page.test.tsx            # Tests for the main page
+│   ├── components/                  # Tests for components
+│   │   └── question/                # Tests for question components
+│   ├── lib/                         # Tests for lib utilities
+│   └── types/                       # Tests for TypeScript types
 ├── components/                      # Reusable UI components
 │   ├── question/                    # Form input components
 │   │   └── textInput.tsx            # Multi-stage text input
@@ -176,8 +134,9 @@ ESAI Awesomeness is a modern, full-stack college application assistant that leve
 ├── config/                          # Configuration files
 │   ├── fonts.ts                     # Font configurations
 │   └── site.ts                      # Site metadata and config
+├── docs/                            # Project documentation
+│   └── test_organization.md         # Test structure documentation
 ├── lib/                             # Utility libraries
-│   ├── __tests__/                   # Library test files
 │   ├── prompts/                     # AI prompt templates
 │   ├── db.ts                        # Database connection and utilities
 │   └── prompts.ts                   # AI prompt configurations
@@ -188,7 +147,6 @@ ESAI Awesomeness is a modern, full-stack college application assistant that leve
 ├── styles/                          # Global styles
 │   └── globals.css                  # Global CSS and Tailwind imports
 ├── types/                           # TypeScript type definitions
-│   ├── __tests__/                   # Type definition tests
 │   ├── database.ts                  # Database-related types
 │   ├── index.ts                     # Common type exports
 │   └── prompts.ts                   # AI prompt types

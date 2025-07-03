@@ -4,9 +4,18 @@ import { executeQuery } from "@/lib/db";
 import { AllStarredResponse, ErrorResponse, StarredItem } from "@/types";
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
 ): Promise<NextResponse<AllStarredResponse | ErrorResponse>> {
   try {
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get("userId");
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "userId parameter is required", success: false, details: "" },
+        { status: 400 },
+      );
+    }
     // Query for starred school matches
     const schoolMatchQuery = `
       SELECT
@@ -17,7 +26,7 @@ export async function GET(
         why_this_college as why_recommendation,
         created_at
       FROM school_match_maker
-      WHERE starred = true
+      WHERE starred = true AND user_id = $1
       ORDER BY created_at DESC
     `;
 
@@ -31,7 +40,7 @@ export async function GET(
         why_this_major as why_recommendation,
         created_at
       FROM major_mentor
-      WHERE starred = true
+      WHERE starred = true AND user_id = $1
       ORDER BY created_at DESC
     `;
 
@@ -45,15 +54,15 @@ export async function GET(
         '' as why_recommendation,
         created_at
       FROM story_strategist
-      WHERE starred = true
+      WHERE starred = true AND user_id = $1
       ORDER BY created_at DESC
     `;
 
     // Execute all queries
     const [schoolMatches, majorMentors, storyStrategists] = await Promise.all([
-      executeQuery(schoolMatchQuery),
-      executeQuery(majorMentorQuery),
-      executeQuery(storyStrategistQuery),
+      executeQuery(schoolMatchQuery, [userId]),
+      executeQuery(majorMentorQuery, [userId]),
+      executeQuery(storyStrategistQuery, [userId]),
     ]);
 
     // Combine all results and sort by created_at
