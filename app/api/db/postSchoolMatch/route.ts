@@ -8,12 +8,15 @@ import { SchoolMatchOption, SchoolMatchRequest } from "@/types";
 export async function POST(request: NextRequest) {
   try {
     const body: SchoolMatchRequest = await request.json();
-    const { userInputs, generationResponse, starredStates = {} } = body;
+    const { userId, userInputs, generationResponse, starredStates = {} } = body;
 
     // Validate required fields
-    if (!userInputs || !generationResponse) {
+    if (!userId || !userInputs || !generationResponse) {
       return NextResponse.json(
-        { error: "Missing required fields: userInputs and generationResponse" },
+        {
+          error:
+            "Missing required fields: userId, userInputs and generationResponse",
+        },
         { status: 400 },
       );
     }
@@ -35,16 +38,18 @@ export async function POST(request: NextRequest) {
     // Generate a UUID for this output group (all recommendations from this generation)
     const outputGroupId = randomUUID();
 
-    // First, delete any existing records for this user session (based on user inputs)
+    // First, delete any existing records for this user and session (based on user inputs)
     // This ensures we don't have duplicates when users toggle stars multiple times
     await executeQuery(
       `DELETE FROM school_match_maker
-       WHERE location = $1
-       AND location_requirements = $2
-       AND future_plans = $3
-       AND ideal_campus_experience = $4
-       AND unweighted_gpa = $5`,
+       WHERE user_id = $1
+       AND location = $2
+       AND location_requirements = $3
+       AND future_plans = $4
+       AND ideal_campus_experience = $5
+       AND unweighted_gpa = $6`,
       [
+        userId,
         userInputs.location,
         userInputs.locationRequirements,
         userInputs.futurePlans,
@@ -64,8 +69,8 @@ export async function POST(request: NextRequest) {
         `INSERT INTO school_match_maker
          (output_group, location, location_requirements, future_plans,
           ideal_campus_experience, unweighted_gpa, college_name,
-          description_of_college, why_this_college, starred, created_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())
+          description_of_college, why_this_college, starred, user_id, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW())
          RETURNING id`,
         [
           outputGroupId,
@@ -78,6 +83,7 @@ export async function POST(request: NextRequest) {
           option.descriptionOfCollege,
           option.whyThisCollege,
           isStarred,
+          userId,
         ],
       );
 

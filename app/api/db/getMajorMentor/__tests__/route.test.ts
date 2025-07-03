@@ -63,7 +63,7 @@ describe("/api/db/getMajorMentor", () => {
   describe("GET", () => {
     it("should fetch all major mentor data successfully", async () => {
       const mockRequest = {
-        url: "http://localhost:3000/api/db/getMajorMentor",
+        url: "http://localhost:3000/api/db/getMajorMentor?userId=test-user-123",
       } as NextRequest;
 
       mockExecuteQuery.mockResolvedValue(mockMajorMentorData);
@@ -72,8 +72,8 @@ describe("/api/db/getMajorMentor", () => {
       const responseData = await response.json();
 
       expect(mockExecuteQuery).toHaveBeenCalledWith(
-        "SELECT * FROM major_mentor ORDER BY created_at DESC",
-        [],
+        "SELECT * FROM major_mentor WHERE user_id = $1 ORDER BY created_at DESC",
+        ["test-user-123"],
       );
 
       expect(response.status).toBe(200);
@@ -87,7 +87,7 @@ describe("/api/db/getMajorMentor", () => {
 
     it("should filter by starred=true", async () => {
       const mockRequest = {
-        url: "http://localhost:3000/api/db/getMajorMentor?starred=true",
+        url: "http://localhost:3000/api/db/getMajorMentor?userId=test-user-123&starred=true",
       } as NextRequest;
 
       const starredData = [mockMajorMentorData[0]]; // Only starred item
@@ -98,8 +98,8 @@ describe("/api/db/getMajorMentor", () => {
       const responseData = await response.json();
 
       expect(mockExecuteQuery).toHaveBeenCalledWith(
-        "SELECT * FROM major_mentor WHERE starred = $1 ORDER BY created_at DESC",
-        [true],
+        "SELECT * FROM major_mentor WHERE user_id = $1 AND starred = $2 ORDER BY created_at DESC",
+        ["test-user-123", true],
       );
 
       expect(response.status).toBe(200);
@@ -113,7 +113,7 @@ describe("/api/db/getMajorMentor", () => {
 
     it("should filter by starred=false", async () => {
       const mockRequest = {
-        url: "http://localhost:3000/api/db/getMajorMentor?starred=false",
+        url: "http://localhost:3000/api/db/getMajorMentor?userId=test-user-123&starred=false",
       } as NextRequest;
 
       const unstarredData = [mockMajorMentorData[1]]; // Only unstarred item
@@ -124,8 +124,8 @@ describe("/api/db/getMajorMentor", () => {
       const responseData = await response.json();
 
       expect(mockExecuteQuery).toHaveBeenCalledWith(
-        "SELECT * FROM major_mentor WHERE starred = $1 ORDER BY created_at DESC",
-        [false],
+        "SELECT * FROM major_mentor WHERE user_id = $1 AND starred = $2 ORDER BY created_at DESC",
+        ["test-user-123", false],
       );
 
       expect(response.status).toBe(200);
@@ -139,7 +139,7 @@ describe("/api/db/getMajorMentor", () => {
 
     it("should handle empty results", async () => {
       const mockRequest = {
-        url: "http://localhost:3000/api/db/getMajorMentor",
+        url: "http://localhost:3000/api/db/getMajorMentor?userId=test-user-123",
       } as NextRequest;
 
       mockExecuteQuery.mockResolvedValue([]);
@@ -158,7 +158,7 @@ describe("/api/db/getMajorMentor", () => {
 
     it("should handle non-array database results", async () => {
       const mockRequest = {
-        url: "http://localhost:3000/api/db/getMajorMentor",
+        url: "http://localhost:3000/api/db/getMajorMentor?userId=test-user-123",
       } as NextRequest;
 
       mockExecuteQuery.mockResolvedValue(null);
@@ -177,7 +177,7 @@ describe("/api/db/getMajorMentor", () => {
 
     it("should handle database errors", async () => {
       const mockRequest = {
-        url: "http://localhost:3000/api/db/getMajorMentor",
+        url: "http://localhost:3000/api/db/getMajorMentor?userId=test-user-123",
       } as NextRequest;
 
       mockExecuteQuery.mockRejectedValue(
@@ -197,7 +197,7 @@ describe("/api/db/getMajorMentor", () => {
 
     it("should handle invalid starred parameter values", async () => {
       const mockRequest = {
-        url: "http://localhost:3000/api/db/getMajorMentor?starred=invalid",
+        url: "http://localhost:3000/api/db/getMajorMentor?userId=test-user-123&starred=invalid",
       } as NextRequest;
 
       mockExecuteQuery.mockResolvedValue(mockMajorMentorData);
@@ -208,8 +208,8 @@ describe("/api/db/getMajorMentor", () => {
 
       // Should treat 'invalid' as falsy, so starred = false
       expect(mockExecuteQuery).toHaveBeenCalledWith(
-        "SELECT * FROM major_mentor WHERE starred = $1 ORDER BY created_at DESC",
-        [false],
+        "SELECT * FROM major_mentor WHERE user_id = $1 AND starred = $2 ORDER BY created_at DESC",
+        ["test-user-123", false],
       );
 
       expect(response.status).toBe(200);
@@ -217,7 +217,7 @@ describe("/api/db/getMajorMentor", () => {
 
     it("should handle multiple query parameters", async () => {
       const mockRequest = {
-        url: "http://localhost:3000/api/db/getMajorMentor?starred=true&other=value",
+        url: "http://localhost:3000/api/db/getMajorMentor?userId=test-user-123&starred=true&other=value",
       } as NextRequest;
 
       mockExecuteQuery.mockResolvedValue([mockMajorMentorData[0]]);
@@ -228,8 +228,8 @@ describe("/api/db/getMajorMentor", () => {
 
       // Should only process starred parameter, ignore others
       expect(mockExecuteQuery).toHaveBeenCalledWith(
-        "SELECT * FROM major_mentor WHERE starred = $1 ORDER BY created_at DESC",
-        [true],
+        "SELECT * FROM major_mentor WHERE user_id = $1 AND starred = $2 ORDER BY created_at DESC",
+        ["test-user-123", true],
       );
 
       expect(response.status).toBe(200);
@@ -237,7 +237,7 @@ describe("/api/db/getMajorMentor", () => {
 
     it("should handle undefined database error", async () => {
       const mockRequest = {
-        url: "http://localhost:3000/api/db/getMajorMentor",
+        url: "http://localhost:3000/api/db/getMajorMentor?userId=test-user-123",
       } as NextRequest;
 
       mockExecuteQuery.mockRejectedValue(
@@ -257,7 +257,7 @@ describe("/api/db/getMajorMentor", () => {
 
     it("should maintain proper ordering by created_at DESC", async () => {
       const mockRequest = {
-        url: "http://localhost:3000/api/db/getMajorMentor",
+        url: "http://localhost:3000/api/db/getMajorMentor?userId=test-user-123",
       } as NextRequest;
 
       const orderedData = [
@@ -272,7 +272,7 @@ describe("/api/db/getMajorMentor", () => {
 
       expect(mockExecuteQuery).toHaveBeenCalledWith(
         expect.stringContaining("ORDER BY created_at DESC"),
-        [],
+        ["test-user-123"],
       );
 
       expect(responseData.data).toEqual(orderedData);
@@ -280,7 +280,7 @@ describe("/api/db/getMajorMentor", () => {
 
     it("should handle starred parameter with null value", async () => {
       const mockRequest = {
-        url: "http://localhost:3000/api/db/getMajorMentor?starred=",
+        url: "http://localhost:3000/api/db/getMajorMentor?userId=test-user-123&starred=",
       } as NextRequest;
 
       mockExecuteQuery.mockResolvedValue(mockMajorMentorData);
@@ -289,11 +289,28 @@ describe("/api/db/getMajorMentor", () => {
 
       // Empty string should be treated as falsy
       expect(mockExecuteQuery).toHaveBeenCalledWith(
-        "SELECT * FROM major_mentor WHERE starred = $1 ORDER BY created_at DESC",
-        [false],
+        "SELECT * FROM major_mentor WHERE user_id = $1 AND starred = $2 ORDER BY created_at DESC",
+        ["test-user-123", false],
       );
 
       expect(response.status).toBe(200);
+    });
+
+    it("should handle missing userId parameter", async () => {
+      const mockRequest = {
+        url: "http://localhost:3000/api/db/getMajorMentor",
+      } as NextRequest;
+
+      const response = await GET(mockRequest);
+      const responseData = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(responseData).toEqual({
+        error: "userId parameter is required",
+        success: false,
+        details: "",
+      });
+      expect(mockExecuteQuery).not.toHaveBeenCalled();
     });
   });
 });

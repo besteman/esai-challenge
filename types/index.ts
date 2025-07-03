@@ -68,6 +68,7 @@ export interface StoryStrategistRecord {
 
 // Request Types
 export interface MajorMentorRequest {
+  userId: string;
   userInputs: {
     favoriteSubject: string;
     factors: {
@@ -82,6 +83,7 @@ export interface MajorMentorRequest {
 }
 
 export interface SchoolMatchRequest {
+  userId: string;
   userInputs: {
     location: string;
     locationRequirements: string;
@@ -94,6 +96,7 @@ export interface SchoolMatchRequest {
 }
 
 export interface StoryStrategistRequest {
+  userId: string;
   userInputs: {
     feelMostLikeYourself: string;
     hardship: string;

@@ -61,6 +61,7 @@ describe("/api/db/postSchoolMatch", () => {
 
   describe("POST", () => {
     const validRequestBody = {
+      userId: "test-user-123",
       userInputs: {
         location: "California",
         locationRequirements: "warm climate",
@@ -105,7 +106,14 @@ describe("/api/db/postSchoolMatch", () => {
       expect(mockExecuteQuery).toHaveBeenNthCalledWith(
         1,
         expect.stringContaining("DELETE FROM school_match_maker"),
-        ["California", "warm climate", "tech career", "large campus", "3.8"],
+        [
+          "test-user-123",
+          "California",
+          "warm climate",
+          "tech career",
+          "large campus",
+          "3.8",
+        ],
       );
 
       // Verify first INSERT
@@ -123,6 +131,7 @@ describe("/api/db/postSchoolMatch", () => {
           "Top tech university",
           "Great for computer science",
           true, // starred state for first option
+          "test-user-123",
         ],
       );
 
@@ -141,6 +150,7 @@ describe("/api/db/postSchoolMatch", () => {
           "Public research university",
           "Strong engineering programs",
           false, // starred state for second option
+          "test-user-123",
         ],
       );
 
@@ -190,7 +200,10 @@ describe("/api/db/postSchoolMatch", () => {
       await POST(mockRequest);
 
       expect(mockNextResponse.json).toHaveBeenCalledWith(
-        { error: "Missing required fields: userInputs and generationResponse" },
+        {
+          error:
+            "Missing required fields: userId, userInputs and generationResponse",
+        },
         { status: 400 },
       );
       expect(mockExecuteQuery).not.toHaveBeenCalled();
@@ -208,7 +221,10 @@ describe("/api/db/postSchoolMatch", () => {
       await POST(mockRequest);
 
       expect(mockNextResponse.json).toHaveBeenCalledWith(
-        { error: "Missing required fields: userInputs and generationResponse" },
+        {
+          error:
+            "Missing required fields: userId, userInputs and generationResponse",
+        },
         { status: 400 },
       );
       expect(mockExecuteQuery).not.toHaveBeenCalled();

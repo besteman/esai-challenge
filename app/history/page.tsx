@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Tabs, Tab } from "@heroui/tabs";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import {
@@ -11,6 +12,7 @@ import {
 } from "@heroui/dropdown";
 
 import { ElevatedButton } from "@/components/elevatedButton";
+import { useAuthenticatedUser } from "@/lib/auth";
 
 interface StarredItem {
   type: "school_match" | "major_mentor" | "story_strategist";
@@ -63,10 +65,13 @@ type DropdownOption =
   | "story_strategist";
 
 export default function History() {
+  const router = useRouter();
+  const { userId, isAuthenticated, isLoading } = useAuthenticatedUser();
+
   const [selectedOption, setSelectedOption] = useState<DropdownOption | null>(
     null,
   );
-  const [isLoading, setIsLoading] = useState(false);
+  const [isFetchingData, setIsFetchingData] = useState(false);
   const [starredItems, setStarredItems] = useState<StarredItem[]>([]);
   const [majorMentorItems, setMajorMentorItems] = useState<MajorMentorItem[]>(
     [],
@@ -82,8 +87,32 @@ export default function History() {
   >([]);
   const [isLoadingSessionHistory, setIsLoadingSessionHistory] = useState(false);
 
+  // Redirect to sign-in if not authenticated
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push("/sign-in");
+    }
+  }, [isLoading, isAuthenticated, router]);
+
+  // Show loading while checking authentication
+  if (isLoading) {
+    return (
+      <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto" />
+          <p className="mt-2 text-default-600">Loading...</p>
+        </div>
+      </section>
+    );
+  }
+
+  // Don't render anything if not authenticated (will redirect)
+  if (!isAuthenticated) {
+    return null;
+  }
+
   const fetchData = async (option: DropdownOption) => {
-    setIsLoading(true);
+    setIsFetchingData(true);
     setSelectedOption(option);
 
     try {
@@ -91,16 +120,16 @@ export default function History() {
 
       switch (option) {
         case "favorites":
-          endpoint = "/api/db/getAllStarred";
+          endpoint = `/api/db/getAllStarred?userId=${userId}`;
           break;
         case "major_mentor":
-          endpoint = "/api/db/getMajorMentor";
+          endpoint = `/api/db/getMajorMentor?userId=${userId}`;
           break;
         case "school_match":
-          endpoint = "/api/db/getSchoolMatch";
+          endpoint = `/api/db/getSchoolMatch?userId=${userId}`;
           break;
         case "story_strategist":
-          endpoint = "/api/db/getStoryStrategist";
+          endpoint = `/api/db/getStoryStrategist?userId=${userId}`;
           break;
         default:
           return;
@@ -132,7 +161,7 @@ export default function History() {
       // eslint-disable-next-line no-console
       console.error(`Error fetching ${option} data:`, error);
     } finally {
-      setIsLoading(false);
+      setIsFetchingData(false);
     }
   };
 
@@ -168,7 +197,9 @@ export default function History() {
     setIsLoadingSessionHistory(true);
 
     try {
-      const response = await fetch("/api/db/getSessionHistory");
+      const response = await fetch(
+        `/api/db/getSessionHistory?userId=${userId}`,
+      );
       const data = await response.json();
 
       if (data.success) {
@@ -367,7 +398,7 @@ export default function History() {
   );
 
   const renderContent = () => {
-    if (isLoading) {
+    if (isFetchingData) {
       return (
         <Card>
           <CardBody>

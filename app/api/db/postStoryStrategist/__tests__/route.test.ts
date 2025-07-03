@@ -61,6 +61,7 @@ describe("/api/db/postStoryStrategist", () => {
 
   describe("POST", () => {
     const validRequestBody = {
+      userId: "test-user-id",
       userInputs: {
         feelMostLikeYourself: "creative",
         hardship: "financial",
@@ -104,7 +105,7 @@ describe("/api/db/postStoryStrategist", () => {
       });
     });
 
-    it("should return 400 for missing userInputs", async () => {
+    it("should return 400 for missing userId and userInputs", async () => {
       const invalidRequestBody = {
         generationResponse: validRequestBody.generationResponse,
       };
@@ -116,7 +117,10 @@ describe("/api/db/postStoryStrategist", () => {
       await POST(mockRequest);
 
       expect(mockNextResponse.json).toHaveBeenCalledWith(
-        { error: "Missing required fields: userInputs and generationResponse" },
+        {
+          error:
+            "Missing required fields: userId, userInputs and generationResponse",
+        },
         { status: 400 },
       );
       expect(mockExecuteQuery).not.toHaveBeenCalled();

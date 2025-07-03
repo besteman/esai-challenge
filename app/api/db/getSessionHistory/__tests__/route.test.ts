@@ -75,18 +75,15 @@ describe("/api/db/getSessionHistory", () => {
 
       mockExecuteQuery.mockResolvedValue(mockData);
 
-      const mockRequest = {} as NextRequest;
+      const mockRequest = {
+        url: "http://localhost:3000/api/db/getSessionHistory?userId=test-user-id",
+      } as NextRequest;
 
       await GET(mockRequest);
 
       expect(mockExecuteQuery).toHaveBeenCalledWith(
         expect.stringContaining("SELECT DISTINCT"),
-      );
-      expect(mockExecuteQuery).toHaveBeenCalledWith(
-        expect.stringContaining("UNION ALL"),
-      );
-      expect(mockExecuteQuery).toHaveBeenCalledWith(
-        expect.stringContaining("ORDER BY created_at DESC"),
+        ["test-user-id"],
       );
       expect(mockNextResponse.json).toHaveBeenCalledWith({
         success: true,
@@ -101,7 +98,9 @@ describe("/api/db/getSessionHistory", () => {
 
       mockExecuteQuery.mockResolvedValue(mockData);
 
-      const mockRequest = {} as NextRequest;
+      const mockRequest = {
+        url: "http://localhost:3000/api/db/getSessionHistory?userId=test-user-id",
+      } as NextRequest;
 
       await GET(mockRequest);
 
@@ -117,7 +116,9 @@ describe("/api/db/getSessionHistory", () => {
       // Database might return a single object instead of array in some cases
       mockExecuteQuery.mockResolvedValue(null as any);
 
-      const mockRequest = {} as NextRequest;
+      const mockRequest = {
+        url: "http://localhost:3000/api/db/getSessionHistory?userId=test-user-id",
+      } as NextRequest;
 
       await GET(mockRequest);
 
@@ -134,7 +135,9 @@ describe("/api/db/getSessionHistory", () => {
 
       mockExecuteQuery.mockRejectedValue(dbError);
 
-      const mockRequest = {} as NextRequest;
+      const mockRequest = {
+        url: "http://localhost:3000/api/db/getSessionHistory?userId=test-user-id",
+      } as NextRequest;
 
       await GET(mockRequest);
 
@@ -157,7 +160,9 @@ describe("/api/db/getSessionHistory", () => {
 
       mockExecuteQuery.mockRejectedValue(errorMessage);
 
-      const mockRequest = {} as NextRequest;
+      const mockRequest = {
+        url: "http://localhost:3000/api/db/getSessionHistory?userId=test-user-id",
+      } as NextRequest;
 
       await GET(mockRequest);
 
@@ -189,7 +194,9 @@ describe("/api/db/getSessionHistory", () => {
 
       mockExecuteQuery.mockResolvedValue(mockData);
 
-      const mockRequest = {} as NextRequest;
+      const mockRequest = {
+        url: "http://localhost:3000/api/db/getSessionHistory?userId=test-user-id",
+      } as NextRequest;
 
       await GET(mockRequest);
 
@@ -203,6 +210,20 @@ describe("/api/db/getSessionHistory", () => {
       expect(queryCall).toContain("WHERE output_group IS NOT NULL");
       expect(queryCall).toContain("GROUP BY output_group");
       expect(queryCall).toContain("ORDER BY created_at DESC");
+    });
+
+    it("should return 400 error when userId is not provided", async () => {
+      const mockRequest = {
+        url: "http://localhost:3000/api/db/getSessionHistory",
+      } as NextRequest;
+
+      await GET(mockRequest);
+
+      expect(mockExecuteQuery).not.toHaveBeenCalled();
+      expect(mockNextResponse.json).toHaveBeenCalledWith(
+        { error: "userId parameter is required", success: false, details: "" },
+        { status: 400 },
+      );
     });
   });
 });

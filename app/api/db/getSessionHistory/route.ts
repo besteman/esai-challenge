@@ -8,9 +8,18 @@ import {
 } from "@/types";
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
 ): Promise<NextResponse<SessionHistoryResponse | ErrorResponse>> {
   try {
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get("userId");
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "userId parameter is required", success: false, details: "" },
+        { status: 400 },
+      );
+    }
     // Query to get distinct output_group values from all tables with their creation dates
     const sessionHistoryQuery = `
       SELECT DISTINCT
@@ -21,7 +30,7 @@ export async function GET(
         MIN(why_this_college) as display_description,
         MIN(created_at) as created_at
       FROM school_match_maker
-      WHERE output_group IS NOT NULL
+      WHERE output_group IS NOT NULL AND user_id = $1
       GROUP BY output_group
 
       UNION ALL
@@ -34,7 +43,7 @@ export async function GET(
         MIN(description_of_major) as display_description,
         MIN(created_at) as created_at
       FROM major_mentor
-      WHERE output_group IS NOT NULL
+      WHERE output_group IS NOT NULL AND user_id = $1
       GROUP BY output_group
 
       UNION ALL
@@ -47,13 +56,13 @@ export async function GET(
         MIN(summary) as display_description,
         MIN(created_at) as created_at
       FROM story_strategist
-      WHERE output_group IS NOT NULL
+      WHERE output_group IS NOT NULL AND user_id = $1
       GROUP BY output_group
 
       ORDER BY created_at DESC
     `;
 
-    const results = await executeQuery(sessionHistoryQuery);
+    const results = await executeQuery(sessionHistoryQuery, [userId]);
 
     const sessionHistory = Array.isArray(results) ? results : [];
 

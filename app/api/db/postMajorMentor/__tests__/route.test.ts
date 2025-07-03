@@ -31,6 +31,7 @@ describe("/api/db/postMajorMentor", () => {
   });
 
   const validRequest = {
+    userId: "test-user-123",
     userInputs: {
       favoriteSubject: "Computer Science",
       factors: {
@@ -79,6 +80,7 @@ describe("/api/db/postMajorMentor", () => {
         1,
         expect.stringContaining("DELETE FROM major_mentor"),
         [
+          "test-user-123",
           "Computer Science",
           "High salary potential",
           "Job security",
@@ -103,6 +105,7 @@ describe("/api/db/postMajorMentor", () => {
           "Study of computational systems",
           "Perfect match for your interests",
           true, // starred
+          "test-user-123",
         ],
       );
 
@@ -122,6 +125,7 @@ describe("/api/db/postMajorMentor", () => {
           "Focus on software development",
           "Great for career goals",
           false, // not starred
+          "test-user-123",
         ],
       );
 
@@ -148,7 +152,8 @@ describe("/api/db/postMajorMentor", () => {
 
       expect(response.status).toBe(400);
       expect(responseData).toEqual({
-        error: "Missing required fields: userInputs and generationResponse",
+        error:
+          "Missing required fields: userId, userInputs and generationResponse",
       });
       expect(mockExecuteQuery).not.toHaveBeenCalled();
     });
@@ -167,7 +172,8 @@ describe("/api/db/postMajorMentor", () => {
 
       expect(response.status).toBe(400);
       expect(responseData).toEqual({
-        error: "Missing required fields: userInputs and generationResponse",
+        error:
+          "Missing required fields: userId, userInputs and generationResponse",
       });
       expect(mockExecuteQuery).not.toHaveBeenCalled();
     });
@@ -214,13 +220,13 @@ describe("/api/db/postMajorMentor", () => {
       expect(mockExecuteQuery).toHaveBeenNthCalledWith(
         2,
         expect.stringContaining("INSERT INTO major_mentor"),
-        expect.arrayContaining([false]), // starred should be false
+        expect.arrayContaining([false, "test-user-123"]), // starred should be false, userId included
       );
 
       expect(mockExecuteQuery).toHaveBeenNthCalledWith(
         3,
         expect.stringContaining("INSERT INTO major_mentor"),
-        expect.arrayContaining([false]), // starred should be false
+        expect.arrayContaining([false, "test-user-123"]), // starred should be false, userId included
       );
 
       expect(response.status).toBe(200);

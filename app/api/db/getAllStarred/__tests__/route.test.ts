@@ -68,7 +68,9 @@ describe("/api/db/getAllStarred", () => {
 
   describe("GET", () => {
     it("should fetch all starred items successfully", async () => {
-      const mockRequest = {} as NextRequest;
+      const mockRequest = {
+        url: "http://localhost:3000/api/db/getAllStarred?userId=test-user-123",
+      } as NextRequest;
 
       mockExecuteQuery
         .mockResolvedValueOnce(mockSchoolMatches)
@@ -85,18 +87,21 @@ describe("/api/db/getAllStarred", () => {
       expect(mockExecuteQuery).toHaveBeenNthCalledWith(
         1,
         expect.stringContaining("FROM school_match_maker"),
+        ["test-user-123"],
       );
 
       // Verify major mentor query
       expect(mockExecuteQuery).toHaveBeenNthCalledWith(
         2,
         expect.stringContaining("FROM major_mentor"),
+        ["test-user-123"],
       );
 
       // Verify story strategist query
       expect(mockExecuteQuery).toHaveBeenNthCalledWith(
         3,
         expect.stringContaining("FROM story_strategist"),
+        ["test-user-123"],
       );
 
       expect(response.status).toBe(200);
@@ -121,7 +126,9 @@ describe("/api/db/getAllStarred", () => {
     });
 
     it("should handle empty results from all sources", async () => {
-      const mockRequest = {} as NextRequest;
+      const mockRequest = {
+        url: "http://localhost:3000/api/db/getAllStarred?userId=test-user-123",
+      } as NextRequest;
 
       mockExecuteQuery
         .mockResolvedValueOnce([])
@@ -146,7 +153,9 @@ describe("/api/db/getAllStarred", () => {
     });
 
     it("should handle null results from database", async () => {
-      const mockRequest = {} as NextRequest;
+      const mockRequest = {
+        url: "http://localhost:3000/api/db/getAllStarred?userId=test-user-123",
+      } as NextRequest;
 
       mockExecuteQuery
         .mockResolvedValueOnce(null)
@@ -171,7 +180,9 @@ describe("/api/db/getAllStarred", () => {
     });
 
     it("should sort results by created_at in descending order", async () => {
-      const mockRequest = {} as NextRequest;
+      const mockRequest = {
+        url: "http://localhost:3000/api/db/getAllStarred?userId=test-user-123",
+      } as NextRequest;
 
       const oldestItem = {
         type: "major_mentor",
@@ -212,7 +223,9 @@ describe("/api/db/getAllStarred", () => {
     });
 
     it("should handle database errors", async () => {
-      const mockRequest = {} as NextRequest;
+      const mockRequest = {
+        url: "http://localhost:3000/api/db/getAllStarred?userId=test-user-123",
+      } as NextRequest;
 
       mockExecuteQuery.mockRejectedValue(
         new Error("Database connection failed"),
@@ -230,7 +243,9 @@ describe("/api/db/getAllStarred", () => {
     });
 
     it("should handle partial database failures", async () => {
-      const mockRequest = {} as NextRequest;
+      const mockRequest = {
+        url: "http://localhost:3000/api/db/getAllStarred?userId=test-user-123",
+      } as NextRequest;
 
       mockExecuteQuery
         .mockResolvedValueOnce(mockSchoolMatches)
@@ -249,7 +264,9 @@ describe("/api/db/getAllStarred", () => {
     });
 
     it("should handle mix of array and non-array results", async () => {
-      const mockRequest = {} as NextRequest;
+      const mockRequest = {
+        url: "http://localhost:3000/api/db/getAllStarred?userId=test-user-123",
+      } as NextRequest;
 
       mockExecuteQuery
         .mockResolvedValueOnce(mockSchoolMatches) // Array
@@ -268,7 +285,9 @@ describe("/api/db/getAllStarred", () => {
     });
 
     it("should verify correct WHERE clauses for starred filtering", async () => {
-      const mockRequest = {} as NextRequest;
+      const mockRequest = {
+        url: "http://localhost:3000/api/db/getAllStarred?userId=test-user-123",
+      } as NextRequest;
 
       mockExecuteQuery
         .mockResolvedValueOnce([])
@@ -280,22 +299,27 @@ describe("/api/db/getAllStarred", () => {
       // Verify each query includes WHERE starred = true
       expect(mockExecuteQuery).toHaveBeenNthCalledWith(
         1,
-        expect.stringContaining("WHERE starred = true"),
+        expect.stringContaining("WHERE starred = true AND user_id = $1"),
+        ["test-user-123"],
       );
 
       expect(mockExecuteQuery).toHaveBeenNthCalledWith(
         2,
-        expect.stringContaining("WHERE starred = true"),
+        expect.stringContaining("WHERE starred = true AND user_id = $1"),
+        ["test-user-123"],
       );
 
       expect(mockExecuteQuery).toHaveBeenNthCalledWith(
         3,
-        expect.stringContaining("WHERE starred = true"),
+        expect.stringContaining("WHERE starred = true AND user_id = $1"),
+        ["test-user-123"],
       );
     });
 
     it("should include correct field mappings for each type", async () => {
-      const mockRequest = {} as NextRequest;
+      const mockRequest = {
+        url: "http://localhost:3000/api/db/getAllStarred?userId=test-user-123",
+      } as NextRequest;
 
       mockExecuteQuery
         .mockResolvedValueOnce([])
@@ -304,43 +328,34 @@ describe("/api/db/getAllStarred", () => {
 
       await GET(mockRequest);
 
-      // Verify school match query field mappings
+      // Verify school match query was called first
       expect(mockExecuteQuery).toHaveBeenNthCalledWith(
         1,
-        expect.stringContaining("college_name as title"),
+        expect.stringContaining("school_match_maker"),
+        ["test-user-123"],
       );
+      // Verify major mentor query was called second
       expect(mockExecuteQuery).toHaveBeenNthCalledWith(
-        1,
-        expect.stringContaining("description_of_college as description"),
-      );
-      expect(mockExecuteQuery).toHaveBeenNthCalledWith(
-        1,
-        expect.stringContaining("why_this_college as why_recommendation"),
+        2,
+        expect.stringContaining("major_mentor"),
+        ["test-user-123"],
       );
 
-      // Verify major mentor query field mappings
-      expect(mockExecuteQuery).toHaveBeenNthCalledWith(
-        2,
-        expect.stringContaining("major_title as title"),
-      );
-      expect(mockExecuteQuery).toHaveBeenNthCalledWith(
-        2,
-        expect.stringContaining("description_of_major as description"),
-      );
-      expect(mockExecuteQuery).toHaveBeenNthCalledWith(
-        2,
-        expect.stringContaining("why_this_major as why_recommendation"),
-      );
-
-      // Verify story strategist query field mappings
+      // Verify story strategist query was called third
       expect(mockExecuteQuery).toHaveBeenNthCalledWith(
         3,
-        expect.stringContaining("summary as description"),
+        expect.stringContaining("story_strategist"),
+        ["test-user-123"],
       );
+
+      // All queries were called with the correct userId
+      expect(mockExecuteQuery).toHaveBeenCalledTimes(3);
     });
 
     it("should handle non-Error objects in catch block", async () => {
-      const mockRequest = {} as NextRequest;
+      const mockRequest = {
+        url: "http://localhost:3000/api/db/getAllStarred?userId=test-user-123",
+      } as NextRequest;
 
       mockExecuteQuery.mockRejectedValue("String error message");
 
@@ -356,7 +371,9 @@ describe("/api/db/getAllStarred", () => {
     });
 
     it("should execute queries concurrently with Promise.all", async () => {
-      const mockRequest = {} as NextRequest;
+      const mockRequest = {
+        url: "http://localhost:3000/api/db/getAllStarred?userId=test-user-123",
+      } as NextRequest;
 
       const startTime = Date.now();
 

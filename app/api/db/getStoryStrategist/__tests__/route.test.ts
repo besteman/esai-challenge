@@ -84,14 +84,14 @@ describe("/api/db/getStoryStrategist", () => {
       mockExecuteQuery.mockResolvedValue(mockData);
 
       const mockRequest = {
-        url: "http://localhost:3000/api/db/getStoryStrategist",
+        url: "http://localhost:3000/api/db/getStoryStrategist?userId=test-user-id",
       } as NextRequest;
 
       await GET(mockRequest);
 
       expect(mockExecuteQuery).toHaveBeenCalledWith(
-        "SELECT * FROM story_strategist ORDER BY created_at DESC",
-        [],
+        "SELECT * FROM story_strategist WHERE user_id = $1 ORDER BY created_at DESC",
+        ["test-user-id"],
       );
       expect(mockNextResponse.json).toHaveBeenCalledWith({
         success: true,
@@ -124,14 +124,14 @@ describe("/api/db/getStoryStrategist", () => {
       mockExecuteQuery.mockResolvedValue(mockData);
 
       const mockRequest = {
-        url: "http://localhost:3000/api/db/getStoryStrategist?starred=true",
+        url: "http://localhost:3000/api/db/getStoryStrategist?userId=test-user-id&starred=true",
       } as NextRequest;
 
       await GET(mockRequest);
 
       expect(mockExecuteQuery).toHaveBeenCalledWith(
-        "SELECT * FROM story_strategist WHERE starred = $1 ORDER BY created_at DESC",
-        [true],
+        "SELECT * FROM story_strategist WHERE user_id = $1 WHERE starred = $1 ORDER BY created_at DESC",
+        ["test-user-id", true],
       );
       expect(mockNextResponse.json).toHaveBeenCalledWith({
         success: true,
@@ -164,14 +164,14 @@ describe("/api/db/getStoryStrategist", () => {
       mockExecuteQuery.mockResolvedValue(mockData);
 
       const mockRequest = {
-        url: "http://localhost:3000/api/db/getStoryStrategist?starred=false",
+        url: "http://localhost:3000/api/db/getStoryStrategist?userId=test-user-id&starred=false",
       } as NextRequest;
 
       await GET(mockRequest);
 
       expect(mockExecuteQuery).toHaveBeenCalledWith(
-        "SELECT * FROM story_strategist WHERE starred = $1 ORDER BY created_at DESC",
-        [false],
+        "SELECT * FROM story_strategist WHERE user_id = $1 WHERE starred = $1 ORDER BY created_at DESC",
+        ["test-user-id", false],
       );
       expect(mockNextResponse.json).toHaveBeenCalledWith({
         success: true,
@@ -187,14 +187,14 @@ describe("/api/db/getStoryStrategist", () => {
       mockExecuteQuery.mockResolvedValue(mockData);
 
       const mockRequest = {
-        url: "http://localhost:3000/api/db/getStoryStrategist",
+        url: "http://localhost:3000/api/db/getStoryStrategist?userId=test-user-id",
       } as NextRequest;
 
       await GET(mockRequest);
 
       expect(mockExecuteQuery).toHaveBeenCalledWith(
-        "SELECT * FROM story_strategist ORDER BY created_at DESC",
-        [],
+        "SELECT * FROM story_strategist WHERE user_id = $1 ORDER BY created_at DESC",
+        ["test-user-id"],
       );
       expect(mockNextResponse.json).toHaveBeenCalledWith({
         success: true,
@@ -209,7 +209,7 @@ describe("/api/db/getStoryStrategist", () => {
       mockExecuteQuery.mockResolvedValue(null as any);
 
       const mockRequest = {
-        url: "http://localhost:3000/api/db/getStoryStrategist",
+        url: "http://localhost:3000/api/db/getStoryStrategist?userId=test-user-id",
       } as NextRequest;
 
       await GET(mockRequest);
@@ -228,7 +228,7 @@ describe("/api/db/getStoryStrategist", () => {
       mockExecuteQuery.mockRejectedValue(dbError);
 
       const mockRequest = {
-        url: "http://localhost:3000/api/db/getStoryStrategist",
+        url: "http://localhost:3000/api/db/getStoryStrategist?userId=test-user-id",
       } as NextRequest;
 
       await GET(mockRequest);
@@ -253,7 +253,7 @@ describe("/api/db/getStoryStrategist", () => {
       mockExecuteQuery.mockRejectedValue(errorMessage);
 
       const mockRequest = {
-        url: "http://localhost:3000/api/db/getStoryStrategist",
+        url: "http://localhost:3000/api/db/getStoryStrategist?userId=test-user-id",
       } as NextRequest;
 
       await GET(mockRequest);
@@ -278,14 +278,14 @@ describe("/api/db/getStoryStrategist", () => {
       mockExecuteQuery.mockResolvedValue(mockData);
 
       const mockRequest = {
-        url: "http://localhost:3000/api/db/getStoryStrategist?starred=true&other=param",
+        url: "http://localhost:3000/api/db/getStoryStrategist?userId=test-user-id&starred=true&other=param",
       } as NextRequest;
 
       await GET(mockRequest);
 
       expect(mockExecuteQuery).toHaveBeenCalledWith(
-        "SELECT * FROM story_strategist WHERE starred = $1 ORDER BY created_at DESC",
-        [true],
+        "SELECT * FROM story_strategist WHERE user_id = $1 WHERE starred = $1 ORDER BY created_at DESC",
+        ["test-user-id", true],
       );
     });
 
@@ -295,14 +295,28 @@ describe("/api/db/getStoryStrategist", () => {
       mockExecuteQuery.mockResolvedValue(mockData);
 
       const mockRequest = {
-        url: "http://localhost:3000/api/db/getStoryStrategist?starred=",
+        url: "http://localhost:3000/api/db/getStoryStrategist?userId=test-user-id&starred=",
       } as NextRequest;
 
       await GET(mockRequest);
 
       expect(mockExecuteQuery).toHaveBeenCalledWith(
-        "SELECT * FROM story_strategist WHERE starred = $1 ORDER BY created_at DESC",
-        [false],
+        "SELECT * FROM story_strategist WHERE user_id = $1 WHERE starred = $1 ORDER BY created_at DESC",
+        ["test-user-id", false],
+      );
+    });
+
+    it("should return 400 error when userId is not provided", async () => {
+      const mockRequest = {
+        url: "http://localhost:3000/api/db/getStoryStrategist",
+      } as NextRequest;
+
+      await GET(mockRequest);
+
+      expect(mockExecuteQuery).not.toHaveBeenCalled();
+      expect(mockNextResponse.json).toHaveBeenCalledWith(
+        { error: "userId parameter is required", success: false, details: "" },
+        { status: 400 },
       );
     });
   });

@@ -80,14 +80,14 @@ describe("/api/db/getSchoolMatch", () => {
       mockExecuteQuery.mockResolvedValue(mockData);
 
       const mockRequest = {
-        url: "http://localhost:3000/api/db/getSchoolMatch",
+        url: "http://localhost:3000/api/db/getSchoolMatch?userId=test-user-123",
       } as NextRequest;
 
       await GET(mockRequest);
 
       expect(mockExecuteQuery).toHaveBeenCalledWith(
-        "SELECT * FROM school_match_maker ORDER BY created_at DESC",
-        [],
+        "SELECT * FROM school_match_maker WHERE user_id = $1 ORDER BY created_at DESC",
+        ["test-user-123"],
       );
       expect(mockNextResponse.json).toHaveBeenCalledWith({
         success: true,
@@ -118,14 +118,14 @@ describe("/api/db/getSchoolMatch", () => {
       mockExecuteQuery.mockResolvedValue(mockData);
 
       const mockRequest = {
-        url: "http://localhost:3000/api/db/getSchoolMatch?starred=true",
+        url: "http://localhost:3000/api/db/getSchoolMatch?userId=test-user-123&starred=true",
       } as NextRequest;
 
       await GET(mockRequest);
 
       expect(mockExecuteQuery).toHaveBeenCalledWith(
-        "SELECT * FROM school_match_maker WHERE starred = $1 ORDER BY created_at DESC",
-        [true],
+        "SELECT * FROM school_match_maker WHERE user_id = $1 AND starred = $2 ORDER BY created_at DESC",
+        ["test-user-123", true],
       );
       expect(mockNextResponse.json).toHaveBeenCalledWith({
         success: true,
@@ -141,14 +141,14 @@ describe("/api/db/getSchoolMatch", () => {
       mockExecuteQuery.mockResolvedValue(mockData);
 
       const mockRequest = {
-        url: "http://localhost:3000/api/db/getSchoolMatch",
+        url: "http://localhost:3000/api/db/getSchoolMatch?userId=test-user-123",
       } as NextRequest;
 
       await GET(mockRequest);
 
       expect(mockExecuteQuery).toHaveBeenCalledWith(
-        "SELECT * FROM school_match_maker ORDER BY created_at DESC",
-        [],
+        "SELECT * FROM school_match_maker WHERE user_id = $1 ORDER BY created_at DESC",
+        ["test-user-123"],
       );
       expect(mockNextResponse.json).toHaveBeenCalledWith({
         success: true,
@@ -164,7 +164,7 @@ describe("/api/db/getSchoolMatch", () => {
       mockExecuteQuery.mockRejectedValue(dbError);
 
       const mockRequest = {
-        url: "http://localhost:3000/api/db/getSchoolMatch",
+        url: "http://localhost:3000/api/db/getSchoolMatch?userId=test-user-123",
       } as NextRequest;
 
       await GET(mockRequest);
@@ -189,7 +189,7 @@ describe("/api/db/getSchoolMatch", () => {
       mockExecuteQuery.mockRejectedValue(errorMessage);
 
       const mockRequest = {
-        url: "http://localhost:3000/api/db/getSchoolMatch",
+        url: "http://localhost:3000/api/db/getSchoolMatch?userId=test-user-123",
       } as NextRequest;
 
       await GET(mockRequest);
@@ -205,6 +205,24 @@ describe("/api/db/getSchoolMatch", () => {
           details: "Unknown error",
         },
         { status: 500 },
+      );
+    });
+
+    it("should return 400 error when userId is missing", async () => {
+      const mockRequest = {
+        url: "http://localhost:3000/api/db/getSchoolMatch",
+      } as NextRequest;
+
+      await GET(mockRequest);
+
+      expect(mockExecuteQuery).not.toHaveBeenCalled();
+      expect(mockNextResponse.json).toHaveBeenCalledWith(
+        {
+          error: "userId parameter is required",
+          success: false,
+          details: "",
+        },
+        { status: 400 },
       );
     });
   });
